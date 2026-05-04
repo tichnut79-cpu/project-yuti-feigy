@@ -1,4 +1,10 @@
+using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
+
+
+14.	builder.Services.AddDbContext<medicineDBconte>(options =>
+15.	    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))); // 
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

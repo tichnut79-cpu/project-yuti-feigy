@@ -3,6 +3,10 @@ import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
+import { createRoot } from 'react-dom/client'
+import Home from './home/home'
+
+
 
 function App() {
   const [count, setCount] = useState(0)
@@ -10,7 +14,8 @@ function App() {
   return (
     <>
     <h1>hello feigy!!!!!!!!!!!!!!!!!!!!</h1>
-      <section id="center">
+    <Home></Home>
+      {/* <section id="center">
         <div className="hero">
           <img src={heroImg} className="base" width="170" height="179" alt="" />
           <img src={reactLogo} className="framework" alt="React logo" />
@@ -114,7 +119,7 @@ function App() {
       </section>
 
       <div className="ticks"></div>
-      <section id="spacer"></section>
+      <section id="spacer"></section> */}
     </>
   )
 }
