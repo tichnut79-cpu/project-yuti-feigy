@@ -7,7 +7,7 @@ namespace ApiPharm.Data
         [Key]
         public Guid Id {get; set;}
         [Required]
-        public string name {get; set;}
-        public List<MedicineInPharm> medicinesInPharms { get; }=[];
+        public string Name {get; set;}
+        public List<MedicineInPharm> MedicinesInPharms { get; }=[];
     }
 }

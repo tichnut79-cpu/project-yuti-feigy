@@ -16,7 +16,7 @@ namespace ApiPharm.Data
         public Pharm Pharm{get; set;}
 
         [Required]
-        public int quantity{get;set;}
+        public int Quantity{get;set;}
         
     }
 }
