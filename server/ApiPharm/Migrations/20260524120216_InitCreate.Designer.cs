@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiPharm.Migrations
 {
     [DbContext(typeof(MedicineDBcontext))]
-    [Migration("20260518094414_InitCreate")]
+    [Migration("20260524120216_InitCreate")]
     partial class InitCreate
     {
         /// <inheritdoc />
