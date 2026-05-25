@@ -13,7 +13,6 @@ function App() {
 
   return (
     <>
-    <h1>hello feigy!!!!!!!!!!!!!!!!!!!!</h1>
     <LoginWithGoogle></LoginWithGoogle>
          {/* <section id="center">
         <div className="hero">
