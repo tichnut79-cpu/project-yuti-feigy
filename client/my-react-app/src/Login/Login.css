@@ -1,0 +1,32 @@
+/* LoginWithGoogle.css */
+
+/* ממרכזים את כל התוכן במסך */
+.google-login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* גובה מלא של המסך */
+  background-color: #f4f4f4; /* רקע בהיר */
+}
+
+/* עיצוב הכותרת */
+.google-login-container h2 {
+  font-family: Arial, sans-serif;
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* עיצוב הקונטיינר של כפתור הגוגל */
+.google-login-button-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: 300px; /* מגבלת רוחב */
+}
+
+/* אפשר להוסיף ריווח סביב הכפתור */
+.google-login-button-wrapper > div {
+  width: 100%;
+}
