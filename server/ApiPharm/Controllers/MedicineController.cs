@@ -20,5 +20,15 @@ namespace ApiPharm.Controllers
         {
             return await _context.Medicines.Include(d => d.Id).ToListAsync();
         }
+         [HttpGet]
+        [HttpGet("search/{name}")]
+        public IActionResult Search(string name)
+        {
+            var result = _context.Medicines
+                .Where(m => m.Name.Contains(name))
+                .ToList();
+
+            return Ok(result);
+        }
     }
 }
