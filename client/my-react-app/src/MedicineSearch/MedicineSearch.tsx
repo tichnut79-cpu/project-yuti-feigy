@@ -12,7 +12,7 @@ const MedicineSearch: React.FC = () => {
 
   // טעינת נתונים מהשרת
   useEffect(() => {
-    fetch("http://localhost:5174/ApiPharm/medicines")
+    fetch("http://localhost:5173/ApiPharm/medicines")
       .then(res => res.json())
       .then(data => {
         console.log(data);
