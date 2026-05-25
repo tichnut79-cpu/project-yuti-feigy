@@ -57,25 +57,22 @@
 
 .input-group input {
     width: 100%;
-    padding: 12px;
-
-    border: 1px solid #b3e5fc;
-
-    background: #fafdff;
-
-    color: #01579b;
-
-    border-radius: 10px;
-
+    padding: 12px 14px;
+    border: 1px solid #dadce0;
+    border-radius: 6px;
     outline: none;
-
-    transition: 0.2s;
 }
 
-.input-group input:focus {
-    border-color: #0288d1;
+/* placeholder בסיסי */
+.input-group input::placeholder {
+    color: #9aa0a6;
+    transition: all 0.25s ease;
+}
 
-    box-shadow: 0 0 0 3px rgba(2, 136, 209, 0.15);
+/* אפקט: “נכנס פנימה” */
+.input-group input:focus::placeholder {
+    transform: translateX(10px);
+    opacity: 0.4;
 }
 
 .login-btn {
