@@ -30,5 +30,10 @@ namespace ApiPharm.Controllers
 
             return Ok(result);
         }
+        [HttpGet]
+    public IActionResult GetAllMedicines()
+    {
+        return Ok(_context.Medicines.ToList());
+    }
     }
 }
