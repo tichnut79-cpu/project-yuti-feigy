@@ -1,71 +1,56 @@
-import React, { useEffect, useState } from "react";
-import "../MedicineSearch/MedicineSearch.css";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchMedicines } from "./MedicineSearchSlice";
+import "./MedicineSearch.css";
 
-type Medicine = {
-  id: number;
-  name: string;
-};
+export default function MedicineSearch() {
+  const dispatch = useDispatch<any>();
 
-const MedicineSearch: React.FC = () => {
-  const [search, setSearch] = useState<string>("");
-  const [medicines, setMedicines] = useState<Medicine[]>([]);
+  const medicines = useSelector(
+    (state: any) => state.medicineSearch.medicines
+  );
 
-  // טעינת נתונים מהשרת
+  const [search, setSearch] = useState("");
+
   useEffect(() => {
-    fetch("http://localhost:5173/ApiPharm/medicines")
-      .then(res => res.json())
-      .then(data => {
-        console.log(data);
-        setMedicines(data);
-      });
-  }, []);
+    dispatch(fetchMedicines());
+  }, [dispatch]);
 
-  // סינון לפי חיפוש
-  const filteredMedicines = medicines.filter((medicine) =>
+  const filteredMedicines = medicines.filter((medicine: any) =>
     medicine.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleSubmit = () => {
-    console.log("Selected medicine:", search);
-  };
-
   return (
     <div className="medicine-page">
-      <div className="medicine-card">
-        <h1>בחר תרופה</h1>
+      <h1>בחר תרופה</h1>
 
-        <input
-          type="text"
-          placeholder="הקלד שם תרופה..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="medicine-input"
-        />
+      <input
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="חפש תרופה..."
+      />
 
-        {search && (
-          <ul className="medicine-list">
-            {filteredMedicines.length > 0 ? (
-              filteredMedicines.map((medicine) => (
-                <li
-                  key={medicine.id}
-                  onClick={() => setSearch(medicine.name)}
-                  className="medicine-item"
-                >
-                  {medicine.name}
-                </li>
-              ))
-            ) : (
-              <li className="no-result">לא נמצאו תוצאות</li>
-            )}
-          </ul>
-        )}
+      <div className="medicinesTable">
+        <h2>Medicines</h2>
 
-        <button className="enter-button" onClick={handleSubmit}>
-          ENTER
-        </button>
+        <table>
+          <thead>
+            <tr>
+              {/* <th>ID</th> */}
+              <th>NAME</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {filteredMedicines.map((m: any) => (
+              <tr key={m.name}>
+                {/* <td>{m.id}</td> */}
+                <td>{m.name}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
-};
-
-export default MedicineSearch;
+}
