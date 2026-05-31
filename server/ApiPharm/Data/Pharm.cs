@@ -5,7 +5,7 @@ namespace ApiPharm.Data
     public class Pharm
     {
         [Key]
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         [Required]
         public string Group{get;set;}
         [Required]
