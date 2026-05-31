@@ -3,6 +3,8 @@ import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
+// import LoginWithGoogle from './Login/Login'
+import MedicineSearch from './MedicineSearch/MedicineSearch'
 // import { createRoot } from 'react-dom/client'
 
 
@@ -12,6 +14,9 @@ function App() {
 
   return (
     <>
+    <h1>hello feigy!!!!!!!!!!!!!!!!!!!!</h1>
+    {/* <LoginWithGoogle></LoginWithGoogle> */}
+<MedicineSearch></MedicineSearch>
          {/* <section id="center">
         <div className="hero">
           <img src={heroImg} className="base" width="170" height="179" alt="" />

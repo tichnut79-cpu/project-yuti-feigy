@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiPharm.Migrations
 {
     [DbContext(typeof(MedicineDBcontext))]
-    [Migration("20260524120216_InitCreate")]
-    partial class InitCreate
+    [Migration("20260525114355_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
