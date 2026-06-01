@@ -1,24 +1,39 @@
 import { useEffect, useState } from "react";
+import type { ChangeEvent } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
 import { fetchMedicines } from "./MedicineSearchSlice";
+import type { RootState, AppDispatch } from "../../App/store";
+
 import "./MedicineSearch.css";
 
-export default function MedicineSearch() {
-  const dispatch = useDispatch<any>();
+type Medicine = {
+  id?: number;
+  name: string;
+};
+
+function MedicineSearch() {
+  const dispatch = useDispatch<AppDispatch>();
 
   const medicines = useSelector(
-    (state: any) => state.medicineSearch.medicines
-  );
+    (state: RootState) => state.medicineSearch.medicines
+  ) as Medicine[];
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState<string>("");
 
   useEffect(() => {
     dispatch(fetchMedicines());
   }, [dispatch]);
 
-  const filteredMedicines = medicines.filter((medicine: any) =>
+  const filteredMedicines = medicines.filter((medicine: Medicine) =>
     medicine.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  const handleSearchChange = (
+    e: ChangeEvent<HTMLInputElement>
+  ) => {
+    setSearch(e.target.value);
+  };
 
   return (
     <div className="medicine-page">
@@ -26,7 +41,7 @@ export default function MedicineSearch() {
 
       <input
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={handleSearchChange}
         placeholder="חפש תרופה..."
       />
 
@@ -42,7 +57,7 @@ export default function MedicineSearch() {
           </thead>
 
           <tbody>
-            {filteredMedicines.map((m: any) => (
+            {filteredMedicines.map((m: Medicine) => (
               <tr key={m.name}>
                 {/* <td>{m.id}</td> */}
                 <td>{m.name}</td>
@@ -54,3 +69,5 @@ export default function MedicineSearch() {
     </div>
   );
 }
+
+export default MedicineSearch;

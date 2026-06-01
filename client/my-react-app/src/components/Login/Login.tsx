@@ -21,13 +21,15 @@ const LoginWithGoogle: React.FC = () => {
     <GoogleOAuthProvider clientId={clientId}>
       <div className="google-login-container">
         <h2>Login with Google</h2>
-        <div className="google-login-button-wrapper"> 
+        <div className="google-login-button-wrapper">
         <GoogleLogin
           onSuccess={handleSuccess}
           onError={handleError}
         />
         </div>
+        <div className='enter' >enter</div>
       </div>
+      
     </GoogleOAuthProvider>
   );
 };
