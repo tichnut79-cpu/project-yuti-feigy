@@ -1,0 +1,24 @@
+services:
+  api:
+    build:
+      context: ./server/ApiPharm
+      dockerfile: Dockerfile
+
+    env_file:
+      - .env
+
+    ports:
+      - "5046:8080"
+
+  client:
+    build:
+      context: ./client/my-react-app
+      dockerfile: Dockerfile
+
+    ports:
+      - "5173:80"
+
+    depends_on:
+      - api
+
+

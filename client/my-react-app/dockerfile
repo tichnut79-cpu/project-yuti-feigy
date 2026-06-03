@@ -1,5 +1,5 @@
 # 1️⃣ בוחרים תמונת בסיס עם Node
-FROM node:20-alpine AS build
+FROM node:24-alpine AS build
 
 # 2️⃣ יוצרים ספרייה לעבודה ומגדירים אותה כ־WORKDIR
 WORKDIR /app
@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # 4️⃣ מתקינים את כל התלויות
-RUN npm install
+RUN npm install --legacy-peer-deps --include=dev
 
 # 5️⃣ מעתיקים את כל הקוד לספרייה
 COPY . .

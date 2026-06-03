@@ -3,6 +3,11 @@ using ApiPharm.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+// builder.Services.AddDbContext<MedicineDBcontext>(options =>
+//     options.UseSqlServer(connectionString));
+
+
 builder.Services.AddDbContext<MedicineDBcontext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -26,7 +31,12 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 app.UseSwagger();
-app.UseSwaggerUI();
+
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
+    c.RoutePrefix = string.Empty; // <- ההבדל המרכזי
+});
 
 app.UseCors("AllowReact");
 

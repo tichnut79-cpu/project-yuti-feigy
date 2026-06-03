@@ -52,5 +52,5 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
-/node_modules
-package-lock.json
+node_modules/
+.env
