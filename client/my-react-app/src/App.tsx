@@ -1,6 +1,6 @@
 import './App.css'
-// import LoginWithGoogle from './Login/Login'
-import MedicineSearch from './MedicineSearch/MedicineSearch'
+// import LoginWithGoogle from './components/Login/Login'
+import MedicineSearch from './components/MedicineSearch/MedicineSearch'
 // import { createRoot } from 'react-dom/client'
 
 

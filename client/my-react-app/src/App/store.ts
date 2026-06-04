@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import medicineSearchReducer from "../MedicineSearch/MedicineSearchSlice";
+import medicineSearchReducer from "../components/MedicineSearch/MedicineSearchSlice";
 
 export const store = configureStore({
   reducer: {

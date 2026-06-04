@@ -22,22 +22,22 @@ namespace ApiPharm.Controllers
         }
 
        [HttpGet("search/{name}")]
-public async Task<IActionResult> Search(string name)
-{
-    var result = await _context.Medicines
-        .Where(m => m.Name.Contains(name))
-        .ToListAsync();
+    public async Task<IActionResult> Search(string name)
+    {
+        var result = await _context.Medicines
+            .Where(m => m.Name.Contains(name))
+            .ToListAsync();
 
-    return Ok(result);
-}
-[HttpPost]
-public async Task<IActionResult> AddMedicine(Medicine medicine)
-{
-    _context.Medicines.Add(medicine);
-    await _context.SaveChangesAsync();
+        return Ok(result);
+    }
+    [HttpPost]
+    public async Task<IActionResult> AddMedicine(Medicine medicine)
+    {
+        _context.Medicines.Add(medicine);
+        await _context.SaveChangesAsync();
 
-    return Ok(medicine);
-}
+        return Ok(medicine);
+    }
     //     [HttpGet]
     // public IActionResult GetAllMedicines()
     // {
