@@ -1,4 +1,15 @@
 services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+
   server:
     build:
       context: ./server/ApiPharm
@@ -9,8 +20,17 @@ services:
         DB_NAME: ${DB_NAME}
     env_file:
       - ./server/ApiPharm/.env
+    environment:
+      ConnectionStrings__DefaultConnection: >
+        Server=sqlserver;
+        Database=${DB_NAME};
+        User Id=${DB_USER};
+        Password=${DB_PASSWORD};
+        TrustServerCertificate=True;
     ports:
-      - "5000:5000"
+      - "8080:8080"
+    depends_on:
+      - sqlserver
 
   client:
     build:
@@ -24,3 +44,6 @@ services:
       - "80:80"
     depends_on:
       - server
+
+volumes:
+  sql_data:
