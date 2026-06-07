@@ -3,13 +3,12 @@ FROM node:20-alpine AS build
 
 # 2️⃣ יוצרים ספרייה לעבודה ומגדירים אותה כ־WORKDIR
 WORKDIR /app
-
-# 3️⃣ מעתיקים את קבצי ה־package.json וה־package-lock.json
 COPY package*.json ./
 
 # 4️⃣ מתקינים את כל התלויות
 RUN npm install
 
+RUN npm install --save-dev @types/node @types/react @types/react-dom
 # 5️⃣ מעתיקים את כל הקוד לספרייה
 COPY . .
 
