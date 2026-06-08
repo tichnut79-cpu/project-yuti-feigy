@@ -1,0 +1,55 @@
+# Build results
+bin/
+obj/
+out/
+publish/
+
+# User-specific files
+*.user
+*.userosscache
+*.suo
+*.cache
+*.sln.docstates
+
+# Visual Studio
+.vs/
+
+# Rider / JetBrains
+.idea/
+*.DotSettings.user
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# NuGet
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+*.nuget.props
+*.nuget.targets
+nuget.config
+
+# Environment variables (IMPORTANT - secrets)
+.env
+.env.*
+
+# Logging / runtime
+logs/
+*.log
+
+# EF Core
+Migrations/*Designer.cs
+Migrations/*Snapshot.cs
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker override (optional)
+docker-compose.override.yml
