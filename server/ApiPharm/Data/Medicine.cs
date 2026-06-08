@@ -5,9 +5,9 @@ namespace ApiPharm.Data
     public class Medicine
     {
         [Key]
-        public Guid Id {get; set;}
+        public Guid Id {get; set;} = Guid.NewGuid();
         [Required]
         public string Name {get; set;}
-        public List<MedicineInPharm> MedicinesInPharms { get; }=[];
+        public List<MedicineInPharm> MedicinesInPharms { get; }=new();
     }
 }
