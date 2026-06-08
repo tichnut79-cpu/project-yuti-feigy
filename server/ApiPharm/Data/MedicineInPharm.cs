@@ -5,7 +5,7 @@ namespace ApiPharm.Data
 {
     public class MedicineInPharm
     {
-        public Guid Id {get;set;}
+        public Guid Id {get;set;} = Guid.NewGuid();
 
       //  [ForeignKey("Id")]
         public Guid IdMedicine{get;set;}

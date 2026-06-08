@@ -21,27 +21,60 @@ namespace ApiPharm.Controllers
             return await _context.Medicines.ToListAsync();
         }
 
-       [HttpGet("search/{name}")]
-    public async Task<IActionResult> Search(string name)
-    {
-        var result = await _context.Medicines
-            .Where(m => m.Name.Contains(name))
-            .ToListAsync();
+        [HttpGet("by-name/{name}")]
+        public async Task<ActionResult<Medicine>> GetMedicineByName(string name)
+        {
+            var medicine = await _context.Medicines
+                .FirstOrDefaultAsync(m => m.Name == name);
 
-        return Ok(result);
-    }
-    [HttpPost]
-    public async Task<IActionResult> AddMedicine(Medicine medicine)
-    {
-        _context.Medicines.Add(medicine);
-        await _context.SaveChangesAsync();
+            if (medicine == null)
+                return NotFound();
 
-        return Ok(medicine);
-    }
-    //     [HttpGet]
-    // public IActionResult GetAllMedicines()
-    // {
-    //     return Ok(_context.Medicines.ToList());
-    // }
+            return medicine;
+        }
+
+        [HttpPost("medicine")]
+        public async Task<ActionResult<Medicine>> CreateMedicine(Medicine medicine)
+        {
+            _context.Medicines.Add(medicine);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(CreateMedicine), new { id = medicine.Id }, medicine);
+        }
+
+        [HttpDelete("by-name/{name}")]
+        public async Task<IActionResult> DeleteMedicineByName(string name)
+        {
+            var medicine = await _context.Medicines
+                .FirstOrDefaultAsync(m => m.Name == name);
+
+            if (medicine == null)
+                return NotFound();
+
+            _context.Medicines.Remove(medicine);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpDelete("delete-duplicates/{name}")]
+        public async Task<IActionResult> DeleteDuplicateMedicines(string name)
+        {
+            var medicines = await _context.Medicines
+                .Where(m => m.Name == name)
+                .ToListAsync();
+
+            if (medicines.Count <= 1)
+                return Ok("No duplicates found.");
+
+            // keep first record
+            var duplicatesToDelete = medicines.Skip(1).ToList();
+
+            _context.Medicines.RemoveRange(duplicatesToDelete);
+
+            await _context.SaveChangesAsync();
+
+            return Ok($"{duplicatesToDelete.Count} duplicate records deleted.");
+        }
     }
 }

@@ -10,6 +10,9 @@ export const fetchMedicines = createAsyncThunk<Medicine[]>(
   "medicineSearch/fetchMedicines",
   async () => {
     const res = await fetch(`${API_URL}/api/medicines`);
+    if(!res.ok){
+      throw new Error("Failed to fetch medicines");
+    }
     return await res.json();
   }
 );
