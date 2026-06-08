@@ -1,7 +1,3 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
 import './App.css'
 // import LoginWithGoogle from './components/Login/Login'
 import MedicineSearch from './components/MedicineSearch/MedicineSearch'
@@ -10,7 +6,6 @@ import MedicineSearch from './components/MedicineSearch/MedicineSearch'
 
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>

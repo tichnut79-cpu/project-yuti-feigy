@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ApiPharm.Models;
+using System.Linq.Expressions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,11 +9,12 @@ var dbName = Environment.GetEnvironmentVariable("DB_NAME");
 var dbUser = Environment.GetEnvironmentVariable("DB_USER");
 var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
 
-var connectionString = $"Server=host.docker.internal,1434;" +
+var connectionString = $"Server=sqlserver;" +
                        $"Database={dbName};" +
                        $"User Id={dbUser};" +
                        $"Password={dbPassword};" +
-                       $"MultipleActiveResultSets=true;TrustServerCertificate=true;";
+                       $"MultipleActiveResultSets=true;"+
+                       $"TrustServerCertificate=true;";
 
 builder.Services.AddDbContext<MedicineDBcontext>(options =>
     options.UseSqlServer(connectionString));
@@ -25,16 +27,31 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact", policy =>
     {
-        policy.WithOrigins("http://localhost")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        policy
+            .WithOrigins(
+                "http://localhost",
+                "http://localhost:80"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
 
 var app = builder.Build();
 
+using(var scope=app.Services.CreateAsyncScope())
+{
+    var DbContext=scope.ServiceProvider.GetRequiredService<MedicineDBcontext>();
+    DbContext.Database.Migrate();
+}
+
 app.UseSwagger();
-app.UseSwaggerUI();
+
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
+    c.RoutePrefix = string.Empty; // <- ההבדל המרכזי
+});
 
 app.UseCors("AllowReact");
 
