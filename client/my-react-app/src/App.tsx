@@ -3,8 +3,8 @@ import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
-// import LoginWithGoogle from './Login/Login'
-import MedicineSearch from './MedicineSearch/MedicineSearch'
+// import LoginWithGoogle from './components/Login/Login'
+import MedicineSearch from './components/MedicineSearch/MedicineSearch'
 // import { createRoot } from 'react-dom/client'
 
 
