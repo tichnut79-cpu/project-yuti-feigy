@@ -1,0 +1,46 @@
+# ========================
+# Visual Studio / .NET
+# ========================
+
+# Build results
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Auto-generated files
+*.Generated.cs
+*.dbmdl
+
+# NuGet packages
+*.nupkg
+packages/
+.nuget/
+
+# EF Core Migrations (optional if you want to ignore local migrations)
+Migrations/
+
+# ========================
+# Node / NPM (if using Node in the server)
+# ========================
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# ========================
+# Environment files
+# ========================
+.env
+.env.local
+.env.*.local
+
+# ========================
+# Logs
+# ========================
+*.log
+logs/
