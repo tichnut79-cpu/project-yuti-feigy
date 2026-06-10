@@ -19,9 +19,9 @@ namespace ApiPharm.Controllers
 public async Task<ActionResult<IEnumerable<Medicine>>> GetMedicines([FromQuery] string search = "")
 {
     var medicines = await _context.Medicines
-        .Where(m => m.Name.StartsWith(search)) // סינון לפי מה שהלקוח מקליד
+        .Where(m => m.Name.Contains(search)) // סינון לפי מה שהלקוח מקליד
         .OrderBy(m => m.Name)                  // אפשרי, כדי להחזיר בצורה מסודרת
-        // .Take(5)                               // רק 5 תוצאות
+        .Take(8)                               // רק 5 תוצאות
         .ToListAsync();
 
     return Ok(medicines);
