@@ -1,5 +1,5 @@
 import './App.css'
-// import LoginWithGoogle from './components/Login/Login'
+import LoginWithGoogle from './components/Login/Login'
 import MedicineSearch from './components/MedicineSearch/MedicineSearch'
 // import { createRoot } from 'react-dom/client'
 
@@ -9,9 +9,8 @@ function App() {
 
   return (
     <>
-    <h1>hello feigy!!!!!!!!!!!!!!!!!!!!</h1>
-    {/* <LoginWithGoogle></LoginWithGoogle> */}
-<MedicineSearch></MedicineSearch>
+    <LoginWithGoogle></LoginWithGoogle>
+{/* <MedicineSearch></MedicineSearch> */}
          {/* <section id="center">
         <div className="hero">
           <img src={heroImg} className="base" width="170" height="179" alt="" />
