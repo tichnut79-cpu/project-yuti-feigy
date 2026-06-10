@@ -66,7 +66,7 @@ const LoginWithGoogle: React.FC = () => {
         </div>
 
       </div>
-      
+
     </GoogleOAuthProvider>
   );
 };
