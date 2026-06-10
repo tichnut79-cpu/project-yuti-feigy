@@ -16,10 +16,16 @@ namespace ApiPharm.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Medicine>>> GetMedicines()
-        {
-            return await _context.Medicines.ToListAsync();
-        }
+public async Task<ActionResult<IEnumerable<Medicine>>> GetMedicines([FromQuery] string search = "")
+{
+    var medicines = await _context.Medicines
+        .Where(m => m.Name.Contains(search)) // סינון לפי מה שהלקוח מקליד
+        .OrderBy(m => m.Name)                  // אפשרי, כדי להחזיר בצורה מסודרת
+        .Take(8)                               // רק 5 תוצאות
+        .ToListAsync();
+
+    return Ok(medicines);
+}
 
         [HttpGet("by-name/{name}")]
         public async Task<ActionResult<Medicine>> GetMedicineByName(string name)
