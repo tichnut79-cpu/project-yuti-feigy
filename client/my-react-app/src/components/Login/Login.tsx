@@ -35,7 +35,7 @@ const LoginWithGoogle: React.FC = () => {
   מעבר לחיפוש תרופות
 </button>
       </div>
-      
+
     </GoogleOAuthProvider>
   );
 };
