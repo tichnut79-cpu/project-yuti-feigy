@@ -2,30 +2,25 @@ services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: sqlserver
+
     environment:
       ACCEPT_EULA: "Y"
       SA_PASSWORD: ${DB_PASSWORD}
+
     ports:
       - "1434:1433"
-    healthcheck:
-          test: ["CMD-SHELL", "bash -c '</dev/tcp/localhost/1433'"]
-          interval: 10s
-          timeout: 5s
-          retries: 10
-          start_period: 90s
+
     volumes:
       - sql_data:/var/opt/mssql
 
   server:
     build:
       context: ./server/ApiPharm
-      dockerfile: dockerfile
-      args:
-        DB_PASSWORD: ${DB_PASSWORD}
-        DB_USER: ${DB_USER}
-        DB_NAME: ${DB_NAME}
+      dockerfile: dockerfile.dev
+
     env_file:
       - ./server/ApiPharm/.env
+
     environment:
       ConnectionStrings__DefaultConnection: >
         Server=sqlserver;
@@ -33,21 +28,31 @@ services:
         User Id=${DB_USER};
         Password=${DB_PASSWORD};
         TrustServerCertificate=True;
+
+    volumes:
+      - ./server/ApiPharm:/src
+
     ports:
       - "8080:8080"
+
     depends_on:
       - sqlserver
 
   client:
     build:
       context: ./client/my-react-app
-      dockerfile: dockerfile
-      args:
-        VITE_API_URL: ${VITE_API_URL}
+      dockerfile: dockerfile.dev
+
     env_file:
       - ./client/my-react-app/.env
+
+    volumes:
+      - ./client/my-react-app:/app
+      - /app/node_modules
+
     ports:
-      - "80:80"
+      - "5173:5173"
+
     depends_on:
       - server
 
