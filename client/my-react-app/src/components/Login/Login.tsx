@@ -1,6 +1,6 @@
-import "./Login.css";
-import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
-import React from "react";
+import './Login.css'
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import { useNavigate } from "react-router-dom";
 
 interface CredentialResponse {
   credential?: string;
@@ -10,8 +10,11 @@ interface CredentialResponse {
 const clientId: string = "YOUR_GOOGLE_CLIENT_ID";
 
 const LoginWithGoogle: React.FC = () => {
+  const navigate = useNavigate();
+
   const handleSuccess = (response: CredentialResponse) => {
     console.log("Google login successful:", response.credential);
+    navigate("/search");
   };
 
   const handleError = () => {
@@ -20,47 +23,17 @@ const LoginWithGoogle: React.FC = () => {
 
   return (
     <GoogleOAuthProvider clientId={clientId}>
-      <div className="login-page">
-
-        <div className="login-box">
-
-          <h1>Sign in</h1>
-
-          <div className="input-group">
-            <label>ID Number</label>
-            <input type="ID" placeholder="Enter your ID number"/>
-          </div>
-
-          <div className="input-group">
-            <label>Location</label>
-            <input type="Location" placeholder="Enter your location"/>
-          </div>
-
-          <div className="input-group">
-            <label>Health Fund</label>
-            <input type="HealthFund" placeholder="Enter your Health Fund"/>
-          </div>
-
-          <button className="login-btn">
-            Sign in
-          </button>
-
-          <div className="divider">
-            or
-          </div>
-
-          <div className="google-btn-wrapper">
-            <GoogleLogin
-              onSuccess={handleSuccess}
-              onError={handleError}
-              theme="outline"
-              size="large"
-              width="270"
-            />
-          </div>
-
+      <div className="google-login-container">
+        <h2>Login with Google</h2>
+        <div className="google-login-button-wrapper">
+        <GoogleLogin
+          onSuccess={handleSuccess}
+          onError={handleError}
+        />
         </div>
-
+        <button onClick={() => navigate("/search")}>
+  מעבר לחיפוש תרופות
+</button>
       </div>
       
     </GoogleOAuthProvider>
