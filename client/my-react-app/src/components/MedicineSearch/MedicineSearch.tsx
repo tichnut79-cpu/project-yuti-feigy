@@ -58,7 +58,7 @@ function MedicineSearch() {
 
           <tbody>
             {filteredMedicines.map((m: Medicine) => (
-              <tr key={m.name}>
+              <tr key={m.name} onClick={()=>setSearch(m.name)}>
                 {/* <td>{m.id}</td> */}
                 <td>{m.name}</td>
               </tr>
