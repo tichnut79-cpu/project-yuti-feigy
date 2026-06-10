@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { ChangeEvent } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { fetchMedicines } from "./MedicineSearchSlice";
+import { fetchMedicines,clearMedicines } from "./MedicineSearchSlice";
 import type { RootState, AppDispatch } from "../../App/store";
 
 import "./MedicineSearch.css";
@@ -22,12 +22,19 @@ function MedicineSearch() {
   const [search, setSearch] = useState<string>("");
 
   useEffect(() => {
-    dispatch(fetchMedicines());
-  }, [dispatch]);
+    if(search.trim()===""){
+      dispatch(clearMedicines());
+      return;
+    }
+    const timeout=setTimeout(()=>{
+      dispatch(fetchMedicines(search));
+    },200);
+    return()=>clearTimeout(timeout);
+  }, [search,dispatch]);
 
-  const filteredMedicines = medicines.filter((medicine: Medicine) =>
-    medicine.name.toLowerCase().includes(search.toLowerCase())
-  );
+  // const filteredMedicines = medicines.filter((medicine: Medicine) =>
+  //   medicine.name.toLowerCase().includes(search.toLowerCase())
+  // );
 
   const handleSearchChange = (
     e: ChangeEvent<HTMLInputElement>
@@ -57,8 +64,10 @@ function MedicineSearch() {
           </thead>
 
           <tbody>
-            {filteredMedicines.map((m: Medicine) => (
-              <tr key={m.name}>
+            {
+            search.trim()!=="" &&
+            medicines.map((m: Medicine) => (
+              <tr key={m.name} onClick={()=>setSearch(m.name)}>
                 {/* <td>{m.id}</td> */}
                 <td>{m.name}</td>
               </tr>

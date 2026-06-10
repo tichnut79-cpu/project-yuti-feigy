@@ -6,10 +6,10 @@ export interface Medicine {
 }
 console.log("API_URL =", API_URL);
 /* 🔹 GET request לשרת */
-export const fetchMedicines = createAsyncThunk<Medicine[]>(
+export const fetchMedicines = createAsyncThunk<Medicine[],string>(
   "medicineSearch/fetchMedicines",
-  async () => {
-    const res = await fetch(`${API_URL}/api/medicines`);
+  async (search:string) => {
+    const res = await fetch(`${API_URL}/api/medicines?search=${search}`);
     if(!res.ok){
       throw new Error("Failed to fetch medicines");
     }
@@ -34,7 +34,9 @@ const initialState: MedicineSearchState = {
 const medicineSearchSlice = createSlice({
   name: "medicineSearch",
   initialState,
-  reducers: {},
+  reducers: {
+    clearMedicines:(state)=>{state.medicines=[];}
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchMedicines.pending, (state) => {
@@ -50,5 +52,5 @@ const medicineSearchSlice = createSlice({
       });
   },
 });
-
+export const {clearMedicines}=medicineSearchSlice.actions;
 export default medicineSearchSlice.reducer;
