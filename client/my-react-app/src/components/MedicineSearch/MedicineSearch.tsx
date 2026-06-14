@@ -15,12 +15,13 @@ type Medicine = {
 function MedicineSearch() {
   const dispatch = useDispatch<AppDispatch>();
 const navigate = useNavigate();
-  const medicines = useSelector(
+const medicines = useSelector(
     (state: RootState) => state.medicineSearch.medicines
   ) as Medicine[];
 
   const [search, setSearch] = useState<string>("");
-
+  const [selectedMedicine, setSelectedMedicine] = useState<string | null>(null);
+  const [error, setError] = useState(false);
   useEffect(() => {
     if(search.trim()===""){
       dispatch(clearMedicines());
@@ -40,7 +41,16 @@ const navigate = useNavigate();
     e: ChangeEvent<HTMLInputElement>
   ) => {
     setSearch(e.target.value);
+    setSelectedMedicine(null);
   };
+  const finalMedicine =
+    selectedMedicine ??
+    medicines.find(
+      (m) => m.name.toLowerCase() === search.toLowerCase()
+    )?.name;
+
+  const isValidMedicine =Boolean(finalMedicine);
+
 
   return (
     <div className="medicine-page">
@@ -50,6 +60,7 @@ const navigate = useNavigate();
         value={search}
         onChange={handleSearchChange}
         placeholder="חפש תרופה..."
+        className={error ? "input-error" : ""}
       />
 
       <div className="medicinesTable">
@@ -67,16 +78,27 @@ const navigate = useNavigate();
             {
             search.trim()!=="" &&
             medicines.map((m: Medicine) => (
-              <tr key={m.name} onClick={()=>setSearch(m.name)}>
-                {/* <td>{m.id}</td> */}
+              <tr key={m.name}
+                onClick={()=>{
+                setSearch(m.name); setSelectedMedicine(m.name)}}>
                 <td>{m.name}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <button className="login-btn" onClick={() => navigate("/pharmsTable")}>
-            enter
+      <button className={`login-btn ${error ? "error-shake" : ""}`}
+      // disabled={!isValidMedicine}
+      onClick={() =>{
+        if(!isValidMedicine){
+          setError(true);
+
+          setTimeout(()=>setError(false),600);
+          return;
+        }
+        navigate("/pharmsTable",{
+      state: { medicine: finalMedicine}})}}>
+            🔎Find Pharmacies
           </button>
     </div>
   );

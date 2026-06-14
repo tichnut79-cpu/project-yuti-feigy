@@ -40,7 +40,13 @@ const LoginWithGoogle: React.FC = () => {
 
           <div className="input-group">
             <label>Health Fund</label>
-            <input type="HealthFund" placeholder="Enter your Health Fund"/>
+            <input type="HealthFund" list="healthFundList" placeholder="Enter your Health Fund"/>
+          <datalist id="healthFundList">
+            <option value="כללית" />
+              <option value="מכבי" />
+              <option value="מאוחדת" />
+              <option value="לאומית" />
+          </datalist>
           </div>
 
           <button className="login-btn" onClick={() => navigate("/search")}>
@@ -64,7 +70,7 @@ const LoginWithGoogle: React.FC = () => {
         </div>
 
       </div>
-      
+
     </GoogleOAuthProvider>
   );
 };
