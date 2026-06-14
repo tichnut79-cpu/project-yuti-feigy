@@ -8,15 +8,22 @@ import PharmaciesTable from "./components/PharmsTable/PharmsTable"
 
 function App() {
   return (
-    <PharmaciesTable
+    // <PharmaciesTable
+    //   city="Tel Aviv"
+    //   userLat={32.0853}
+    //   userLng={34.7818}
+    // />
+    <Routes>
+       <Route path="/" element={<LoginWithGoogle></LoginWithGoogle>}></Route>
+       <Route path="/search" element={<MedicineSearch></MedicineSearch>}></Route>
+       <Route path="/pharmsTable" element={
+        <PharmaciesTable
       city="Tel Aviv"
       userLat={32.0853}
       userLng={34.7818}
-    />
-    // <Routes>
-    //   <Route path="/" element={<LoginWithGoogle></LoginWithGoogle>}></Route>
-    //   <Route path="/search" element={<MedicineSearch></MedicineSearch>}></Route>
-    // </Routes>
+    />}>
+       </Route>
+     </Routes>
 
   );
 }

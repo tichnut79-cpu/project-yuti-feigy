@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { ChangeEvent } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
+import { useNavigate } from "react-router-dom";
 import { fetchMedicines,clearMedicines } from "./MedicineSearchSlice";
 import type { RootState, AppDispatch } from "../../App/store";
 
@@ -14,7 +14,7 @@ type Medicine = {
 
 function MedicineSearch() {
   const dispatch = useDispatch<AppDispatch>();
-
+const navigate = useNavigate();
   const medicines = useSelector(
     (state: RootState) => state.medicineSearch.medicines
   ) as Medicine[];
@@ -75,7 +75,7 @@ function MedicineSearch() {
           </tbody>
         </table>
       </div>
-      <button className="login-btn" onClick={() => navigate("/search")}>
+      <button className="login-btn" onClick={() => navigate("/pharmsTable")}>
             enter
           </button>
     </div>

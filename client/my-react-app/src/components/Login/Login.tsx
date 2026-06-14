@@ -1,5 +1,6 @@
 import "./Login.css";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import { useNavigate } from "react-router-dom";
 import React from "react";
 
 interface CredentialResponse {
@@ -8,8 +9,9 @@ interface CredentialResponse {
 }
 
 const clientId: string = "YOUR_GOOGLE_CLIENT_ID";
-
 const LoginWithGoogle: React.FC = () => {
+  const navigate = useNavigate();
+
   const handleSuccess = (response: CredentialResponse) => {
     console.log("Google login successful:", response.credential);
   };
@@ -41,7 +43,7 @@ const LoginWithGoogle: React.FC = () => {
             <input type="HealthFund" placeholder="Enter your Health Fund"/>
           </div>
 
-          <button className="login-btn">
+          <button className="login-btn" onClick={() => navigate("/search")}>
             Sign in
           </button>
 
