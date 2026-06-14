@@ -28,7 +28,7 @@ function MedicineSearch() {
     }
     const timeout=setTimeout(()=>{
       dispatch(fetchMedicines(search));
-    },200);
+    },100);
     return()=>clearTimeout(timeout);
   }, [search,dispatch]);
 
