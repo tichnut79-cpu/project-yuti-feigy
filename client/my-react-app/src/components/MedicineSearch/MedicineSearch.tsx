@@ -75,6 +75,9 @@ function MedicineSearch() {
           </tbody>
         </table>
       </div>
+      <button className="login-btn" onClick={() => navigate("/search")}>
+            enter
+          </button>
     </div>
   );
 }

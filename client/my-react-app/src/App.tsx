@@ -13,6 +13,8 @@ function App() {
     <Routes>
       <Route path="/" element={<LoginWithGoogle></LoginWithGoogle>}></Route>
       <Route path="/search" element={<MedicineSearch></MedicineSearch>}></Route>
+      <Route path="/pharms-table" element={<MedicineSearch></MedicineSearch>}></Route>
+
     </Routes>
 
   );
