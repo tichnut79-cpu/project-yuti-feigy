@@ -1,21 +1,22 @@
-import './App.css'
 import { Routes, Route } from "react-router-dom";
-
 import LoginWithGoogle from './components/Login/Login'
 import MedicineSearch from './components/MedicineSearch/MedicineSearch'
-// import { createRoot } from 'react-dom/client'
+import './App.css'
+import PharmaciesTable from "./components/PharmsTable/PharmsTable"
 
 
 
 function App() {
-
   return (
-    <Routes>
-      <Route path="/" element={<LoginWithGoogle></LoginWithGoogle>}></Route>
-      <Route path="/search" element={<MedicineSearch></MedicineSearch>}></Route>
-      <Route path="/pharms-table" element={<MedicineSearch></MedicineSearch>}></Route>
-
-    </Routes>
+    <PharmaciesTable
+      city="Tel Aviv"
+      userLat={32.0853}
+      userLng={34.7818}
+    />
+    // <Routes>
+    //   <Route path="/" element={<LoginWithGoogle></LoginWithGoogle>}></Route>
+    //   <Route path="/search" element={<MedicineSearch></MedicineSearch>}></Route>
+    // </Routes>
 
   );
 }

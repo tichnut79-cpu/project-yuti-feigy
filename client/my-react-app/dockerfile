@@ -12,6 +12,9 @@ COPY package*.json ./
 
 RUN npm install
 
+RUN npm ls vite
+RUN ls node_modules/.bin
+
 # הוספת type definitions
 RUN npm install --save-dev @types/node @types/react @types/react-dom
 
