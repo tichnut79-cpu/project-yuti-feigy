@@ -3,7 +3,11 @@ using ApiPharm.Models;
 using System.Linq.Expressions;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllers();
 
+builder.Services.AddHttpClient();
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<GeoService>();
 // קריאה מ־ENV
 var dbName = Environment.GetEnvironmentVariable("DB_NAME");
 var dbUser = Environment.GetEnvironmentVariable("DB_USER");

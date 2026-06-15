@@ -2,6 +2,7 @@ import "./Login.css";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import React from "react";
+import LocationInput from "./LocationInput";
 
 interface CredentialResponse {
   credential?: string;
@@ -34,8 +35,8 @@ const LoginWithGoogle: React.FC = () => {
           </div>
 
           <div className="input-group">
-            <label>Location</label>
-            <input type="Location" placeholder="Enter your location"/>
+
+            <LocationInput/>
           </div>
 
           <div className="input-group">
