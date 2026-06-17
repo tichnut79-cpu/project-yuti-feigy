@@ -1,93 +1,105 @@
-import { useState } from "react";
+import { useRef,useState } from "react";
 
 export default function LocationInput() {
   const [city, setCity] = useState("");
   const [street, setStreet] = useState("");
 
-  const [cityResults, setCityResults] = useState<any[]>([]);
-  const [streetResults, setStreetResults] = useState<any[]>([]);
+  const [results, setResults] = useState([]);
+const [timer, setTimer] = useState(null);
+  const [streetResults, setStreetResults] = useState([]);
+  const timerRef = useRef(null);
+  // debounce פשוט
 
-  const searchCities = async (q: string) => {
-    setCity(q);
-    if (!q) return;
+  const searchCities = async (value) => {
+  setCity(value);
+    if (!value || value.trim().length === 0) {
+    setResults([]);
+    return;
+  }
+  if (timerRef.current) clearTimeout(timerRef.current);
 
-    const res = await fetch(`http://localhost:8080/api/geo/cities?q=${q}`);
-    const data = await res.json();
-    setCityResults(data);
-  };
-
-  const searchStreets = async (q: string) => {
-    setStreet(q);
-    if (!q || !city) return;
-
+  timerRef.current=setTimeout(async()=>{
     const res = await fetch(
-      `http://localhost:8080/api/geo/streets?q=${q}&city=${city}`
-    );
-    const data = await res.json();
-    setStreetResults(data);
-  };
+    `http://localhost:8080/api/geo/cities?q=${encodeURIComponent(value)}`
+  );
+  const data = await res.json();
+setResults(data);
+  },400);
+
+};
+
+  const searchStreets = async (value: string) => {
+  setStreet(value);
+
+  if (!value || !city) return;
+
+  const cleanCity = city.split(",")[0];
+
+  const res = await fetch(
+    `http://localhost:8080/api/geo/streets?q=${value}&city=${encodeURIComponent(cleanCity)}`
+  );
+
+  const data = await res.json();
+  setStreetResults(data);
+};
 
   return (
-    <div className="location-wrapper">
+  <div className="location-wrapper">
 
-      <label>Location</label>
+    {/* עיר */}
+    <div className="autocomplete-wrapper">
+      <h3>City</h3>
 
-      {/* עיר */}
-      <div className="autocomplete-wrapper">
+      <input
+        value={city}
+        onChange={(e) => searchCities(e.target.value)}
+        placeholder="Enter city"
+      />
 
-  <input
-    value={city}
-    placeholder="Enter city"
-    onChange={(e) => searchCities(e.target.value)}
-  />
-
-  {cityResults.length > 0 && (
-    <div className="dropdown">
-      {cityResults.map((item, i) => (
-        <div
-          key={i}
-          onClick={() => {
-            setCity(item.name ?? "");
-            setCityResults([]);
-          }}
-          style={{ cursor: "pointer" }}
-        >
-          {(item.name ?? "").split(",")[0]}
+      {results.length > 0 && (
+        <div className="dropdown">
+          {results.map((item, i) => (
+            <div
+              key={i}
+              onClick={() => {
+                setCity(item.display ?? "");
+                setResults([]);
+}}
+            >
+              {item.display}
+            </div>
+          ))}
         </div>
-      ))}
+      )}
     </div>
-  )}
 
-</div>
+    {/* רחוב */}
+    <div className="autocomplete-wrapper">
+      <h3>Street</h3>
 
-      {/* רחוב */}
-      <div className="autocomplete-wrapper">
+      <input
+        value={street}
+        onChange={(e) => searchStreets(e.target.value)}
+        placeholder="Enter street"
+      />
 
-        <input
-          value={street}
-          placeholder="Enter street"
-          onChange={(e) => searchStreets(e.target.value)}
-        />
-
-        {streetResults.length > 0 && (
-          <div className="dropdown">
-            {streetResults.map((item, i) => (
-              <div
-                key={i}
-                onClick={() => {
-                  setStreet(item.display_name?.split(",")[0] ?? "");
-                  setStreetResults([]);
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                {item.display_name?.split(",")[0]}
-              </div>
-            ))}
-          </div>
-        )}
-
-      </div>
-
+      {streetResults.length > 0 && (
+        <div className="dropdown">
+          {streetResults.map((item, i) => (
+            <div
+              key={i}
+              onClick={() => {
+                setStreet(item.name);
+                setStreetResults([]);
+              }}
+            >
+              {item.name}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
-  );
+
+  </div>
+);
 }

@@ -1,3 +1,6 @@
+
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -18,79 +21,90 @@ public class GeoService
         _http.DefaultRequestHeaders.UserAgent.Clear();
         _http.DefaultRequestHeaders.UserAgent.ParseAdd("my-csharp-app");
     }
-public async Task<object?> GetCities(string q)
+
+    private static string Normalize(string s)
 {
+    return (s ?? "")
+        .ToLower()
+        .Replace("'", "")
+        .Replace("׳", "")
+        .Replace("\"", "")
+        .Replace("-", "")
+        .Replace(" ", "")
+        .Trim();
+}
+
+    public async Task<IActionResult> GetCities(string q)
+{
+    if (string.IsNullOrWhiteSpace(q))
+        return new OkObjectResult(Array.Empty<object>());
+
+    var query = q.Trim();
+
+    var url =
+        $"https://nominatim.openstreetmap.org/search?format=json&q={Uri.EscapeDataString(query)}&countrycodes=il&limit=20&addressdetails=1";
+
+    JsonElement[] raw;
+
     try
     {
-        if (string.IsNullOrWhiteSpace(q))
-            return new object[0];
-
-        var qNorm = q.Trim().ToLower();
-
-        var key = $"city_{qNorm}";
-        if (_cache.TryGetValue(key, out object cached))
-            return cached;
-
-        SetHeaders();
-
-        qNorm = q.Trim().ToLower();
-
-var url =
-    $"https://nominatim.openstreetmap.org/search?format=json&q={q}&countrycodes=il&addressdetails=1&limit=10&accept-language=en";
-
-var raw = await _http.GetFromJsonAsync<JsonElement[]>(url);
-
-if (raw == null)
-    return new object[0];
-
-var result = raw
-    .Select(x =>
-    {
-        var display = x.GetProperty("display_name").ToString();
-        var name = display.Split(',')[0];
-
-        return new
-        {
-            name,
-            lat = x.GetProperty("lat").ToString(),
-            lon = x.GetProperty("lon").ToString()
-        };
-    })
-    .Where(x =>
-    !string.IsNullOrWhiteSpace(x.name) &&
-    x.name.ToLower().Contains(qNorm)
-)
-    .Take(10)
-    .ToList();
-
-        _cache.Set(key, result, TimeSpan.FromHours(24));
-
-        return result;
+        raw = await _http.GetFromJsonAsync<JsonElement[]>(url);
     }
     catch
     {
-        return new object[0];
+        return new OkObjectResult(Array.Empty<object>());
     }
-}
 
-  public async Task<object?> GetStreets(string q, string city)
+    if (raw == null || raw.Length == 0)
+        return new OkObjectResult(Array.Empty<object>());
+
+    var result = raw
+    .Where(x =>
+        x.TryGetProperty("class", out var c) &&
+        c.GetString() == "place" &&
+        x.TryGetProperty("type", out var t) &&
+        new[] { "city", "town", "village", "hamlet" }
+            .Contains(t.GetString())
+    )
+    .Select(x => new
     {
-        if (string.IsNullOrWhiteSpace(q) || string.IsNullOrWhiteSpace(city))
-            return null;
+        display = x.GetProperty("display_name").GetString()
+    })
+    .GroupBy(x =>
+    {
+        var name = x.display ?? "";
+        return Normalize(name.Split(',')[0]); // 👈 רק שם העיר!
+    })
+    .Select(g => new
+    {
+        display = g.First().display
+    })
+    .ToList();
+    return new OkObjectResult(result);
+}
+    private static int Levenshtein(string a, string b)
+    {
+        if (string.IsNullOrEmpty(a)) return b.Length;
+        if (string.IsNullOrEmpty(b)) return a.Length;
 
-        var key = $"street_{city}_{q}";
-        if (_cache.TryGetValue(key, out object cached))
-            return cached;
+        var dp = new int[a.Length + 1, b.Length + 1];
 
-        SetHeaders();
+        for (int i = 0; i <= a.Length; i++)
+            for (int j = 0; j <= b.Length; j++)
+            {
+                if (i == 0) dp[i, j] = j;
+                else if (j == 0) dp[i, j] = i;
+                else
+                {
+                    int cost = a[i - 1] == b[j - 1] ? 0 : 1;
 
-        var url =
-            $"https://nominatim.openstreetmap.org/search?format=json&q={q} {city}&countrycodes=il&limit=5";
+                    dp[i, j] = Math.Min(
+                        Math.Min(dp[i - 1, j] + 1, dp[i, j - 1] + 1),
+                        dp[i - 1, j - 1] + cost
+                    );
+                }
+            }
 
-        var result = await _http.GetFromJsonAsync<object[]>(url);
-
-        _cache.Set(key, result, TimeSpan.FromHours(24));
-
-        return result;
+        return dp[a.Length, b.Length];
     }
 }
