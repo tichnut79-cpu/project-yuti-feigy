@@ -67,7 +67,7 @@ const removeMedicine = (name: string) => {
       <div
         key={m}
         className="selected-item">
-        
+
         {m}
         <span className="remove-x"
         onClick={() => removeMedicine(m)}
