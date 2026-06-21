@@ -54,7 +54,8 @@ public class GeoService
     {
         return new OkObjectResult(Array.Empty<object>());
     }
-
+    Console.WriteLine(raw?.Length);
+    Console.WriteLine(JsonSerializer.Serialize(raw));
     if (raw == null || raw.Length == 0)
         return new OkObjectResult(Array.Empty<object>());
 

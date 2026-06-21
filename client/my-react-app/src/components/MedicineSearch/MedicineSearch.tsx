@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchMedicines,clearMedicines } from "./MedicineSearchSlice";
 import type { RootState, AppDispatch } from "../../App/store";
-
+import { motion, AnimatePresence } from "framer-motion";
 import "./MedicineSearch.css";
 
 type Medicine = {
@@ -20,8 +20,7 @@ const medicines = useSelector(
   ) as Medicine[];
 
   const [search, setSearch] = useState<string>("");
-  const [selectedMedicine, setSelectedMedicine] = useState<string | null>(null);
-  const [error, setError] = useState(false);
+const [selectedMedicines, setSelectedMedicines] = useState<string[]>([]);  const [error, setError] = useState(false);
   useEffect(() => {
     if(search.trim()===""){
       dispatch(clearMedicines());
@@ -36,24 +35,57 @@ const medicines = useSelector(
   // const filteredMedicines = medicines.filter((medicine: Medicine) =>
   //   medicine.name.toLowerCase().includes(search.toLowerCase())
   // );
-
+  const toggleMedicine = (name: string) => {
+  setSelectedMedicines((prev) =>
+    prev.includes(name)
+      ? prev.filter((m) => m !== name)
+      : [...prev, name]
+  );
+};
   const handleSearchChange = (
     e: ChangeEvent<HTMLInputElement>
   ) => {
     setSearch(e.target.value);
-    setSelectedMedicine(null);
+    // setSelectedMedicine(null);
   };
-  const finalMedicine =
-    selectedMedicine ??
-    medicines.find(
-      (m) => m.name.toLowerCase() === search.toLowerCase()
-    )?.name;
-
-  const isValidMedicine =Boolean(finalMedicine);
+  const isValidMedicine = selectedMedicines.length > 0;
 
 
   return (
-    <div className="medicine-page">
+   <div className="medicine-page">
+
+  <AnimatePresence>
+    {selectedMedicines.length > 0 && (
+      <motion.div
+        className="selected-box"
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 20 }}
+        transition={{ duration: 0.2 }}
+      >
+        <h3 className="title">
+          התרופות שלי
+          <span className="badge">
+            {selectedMedicines.length}
+          </span>
+        </h3>
+
+        {selectedMedicines.map((m) => (
+          <div
+            key={m}
+            className="selected-item"
+            onClick={() => toggleMedicine(m)}
+          >
+            {m} ✕
+          </div>
+        ))}
+      </motion.div>
+    )}
+  </AnimatePresence>
+
+  {/* שאר הקומפוננטה שלך כאן */}
+
+  {/* שאר הקומפוננטה שלך ממשיכה כאן */}
       <h1>בחר תרופה</h1>
 
       <input
@@ -79,8 +111,7 @@ const medicines = useSelector(
             search.trim()!=="" &&
             medicines.map((m: Medicine) => (
               <tr key={m.name}
-                onClick={()=>{
-                setSearch(m.name); setSelectedMedicine(m.name)}}>
+               onClick={() => toggleMedicine(m.name)}>
                 <td>{m.name}</td>
               </tr>
             ))}
@@ -96,8 +127,9 @@ const medicines = useSelector(
           setTimeout(()=>setError(false),600);
           return;
         }
-        navigate("/pharmsTable",{
-      state: { medicine: finalMedicine}})}}>
+        navigate("/pharmsTable", {
+  state: { medicines: selectedMedicines }
+})}}>
             🔎Find Pharmacies
           </button>
     </div>
