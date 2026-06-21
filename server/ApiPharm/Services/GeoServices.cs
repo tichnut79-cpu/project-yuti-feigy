@@ -36,6 +36,7 @@ public class GeoService
 
     public async Task<IActionResult> GetCities(string q)
 {
+    SetHeaders();
     if (string.IsNullOrWhiteSpace(q))
         return new OkObjectResult(Array.Empty<object>());
 
@@ -82,6 +83,7 @@ public class GeoService
     .ToList();
     return new OkObjectResult(result);
 }
+
     private static int Levenshtein(string a, string b)
     {
         if (string.IsNullOrEmpty(a)) return b.Length;

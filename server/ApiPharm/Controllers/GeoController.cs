@@ -17,10 +17,10 @@ public class GeoController : ControllerBase
         return Ok(await _geo.GetCities(q));
     }
 
-    [HttpGet("streets")]
-    public async Task<IActionResult> Streets(string q, string city)
-    {
-        return Ok(await _geo.GetStreets(q, city));
-    }
+    // [HttpGet("streets")]
+    // public async Task<IActionResult> Streets(string q, string city)
+    // {
+    //     return Ok(await _geo.GetStreets(q, city));
+    // }
 
 }
