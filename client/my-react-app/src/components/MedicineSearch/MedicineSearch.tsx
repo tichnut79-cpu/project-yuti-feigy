@@ -20,7 +20,7 @@ const medicines = useSelector(
   ) as Medicine[];
 
   const [search, setSearch] = useState<string>("");
-  const [selectedMedicine, setSelectedMedicine] = useState<string | null>(null);
+  const [selectedMedicines, setSelectedMedicines] = useState<string[]>([]);
   const [error, setError] = useState(false);
   useEffect(() => {
     if(search.trim()===""){
@@ -36,24 +36,49 @@ const medicines = useSelector(
   // const filteredMedicines = medicines.filter((medicine: Medicine) =>
   //   medicine.name.toLowerCase().includes(search.toLowerCase())
   // );
-
+const addMedicine = (name: string) => {
+  setSelectedMedicines((prev) =>
+    prev.includes(name) ? prev : [...prev, name]
+  );
+};
+const removeMedicine = (name: string) => {
+  setSelectedMedicines((prev) =>
+    prev.filter((m) => m !== name)
+  );
+};
   const handleSearchChange = (
     e: ChangeEvent<HTMLInputElement>
   ) => {
     setSearch(e.target.value);
-    setSelectedMedicine(null);
   };
-  const finalMedicine =
-    selectedMedicine ??
-    medicines.find(
-      (m) => m.name.toLowerCase() === search.toLowerCase()
-    )?.name;
-
-  const isValidMedicine =Boolean(finalMedicine);
+  const isValidMedicine = selectedMedicines?.length > 0;
 
 
   return (
     <div className="medicine-page">
+      {selectedMedicines.length > 0 && (
+  <div className="selected-box">
+
+    <div className="selected-title">
+      נבחרו {selectedMedicines.length} תרופות
+    </div>
+
+    {selectedMedicines.map((m) => (
+      <div
+        key={m}
+        className="selected-item">
+        
+        {m}
+        <span className="remove-x"
+        onClick={() => removeMedicine(m)}
+    >
+      X
+    </span>
+      </div>
+    ))}
+
+  </div>
+)}
       <h1>בחר תרופה</h1>
 
       <input
@@ -79,8 +104,7 @@ const medicines = useSelector(
             search.trim()!=="" &&
             medicines.map((m: Medicine) => (
               <tr key={m.name}
-                onClick={()=>{
-                setSearch(m.name); setSelectedMedicine(m.name)}}>
+                onClick={() => addMedicine(m.name)}>
                 <td>{m.name}</td>
               </tr>
             ))}
@@ -96,8 +120,9 @@ const medicines = useSelector(
           setTimeout(()=>setError(false),600);
           return;
         }
-        navigate("/pharmsTable",{
-      state: { medicine: finalMedicine}})}}>
+        navigate("/pharmsTable", {
+  state: { medicines: selectedMedicines }
+})}}>
             🔎Find Pharmacies
           </button>
     </div>
