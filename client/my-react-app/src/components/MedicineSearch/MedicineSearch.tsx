@@ -20,7 +20,8 @@ const medicines = useSelector(
   ) as Medicine[];
 
   const [search, setSearch] = useState<string>("");
-const [selectedMedicines, setSelectedMedicines] = useState<string[]>([]);  const [error, setError] = useState(false);
+  const [selectedMedicines, setSelectedMedicines] = useState<string[]>([]);
+  const [error, setError] = useState(false);
   useEffect(() => {
     if(search.trim()===""){
       dispatch(clearMedicines());
@@ -35,57 +36,49 @@ const [selectedMedicines, setSelectedMedicines] = useState<string[]>([]);  const
   // const filteredMedicines = medicines.filter((medicine: Medicine) =>
   //   medicine.name.toLowerCase().includes(search.toLowerCase())
   // );
-  const toggleMedicine = (name: string) => {
+const addMedicine = (name: string) => {
   setSelectedMedicines((prev) =>
-    prev.includes(name)
-      ? prev.filter((m) => m !== name)
-      : [...prev, name]
+    prev.includes(name) ? prev : [...prev, name]
+  );
+};
+const removeMedicine = (name: string) => {
+  setSelectedMedicines((prev) =>
+    prev.filter((m) => m !== name)
   );
 };
   const handleSearchChange = (
     e: ChangeEvent<HTMLInputElement>
   ) => {
     setSearch(e.target.value);
-    // setSelectedMedicine(null);
   };
-  const isValidMedicine = selectedMedicines.length > 0;
+  const isValidMedicine = selectedMedicines?.length > 0;
 
 
   return (
-   <div className="medicine-page">
+    <div className="medicine-page">
+      {selectedMedicines.length > 0 && (
+  <div className="selected-box">
 
-  <AnimatePresence>
-    {selectedMedicines.length > 0 && (
-      <motion.div
-        className="selected-box"
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: 20 }}
-        transition={{ duration: 0.2 }}
-      >
-        <h3 className="title">
-          התרופות שלי
-          <span className="badge">
-            {selectedMedicines.length}
-          </span>
-        </h3>
+    <div className="selected-title">
+      נבחרו {selectedMedicines.length} תרופות
+    </div>
 
-        {selectedMedicines.map((m) => (
-          <div
-            key={m}
-            className="selected-item"
-            onClick={() => toggleMedicine(m)}
-          >
-            {m} ✕
-          </div>
-        ))}
-      </motion.div>
-    )}
-  </AnimatePresence>
+    {selectedMedicines.map((m) => (
+      <div
+        key={m}
+        className="selected-item">
+        
+        {m}
+        <span className="remove-x"
+        onClick={() => removeMedicine(m)}
+    >
+      X
+    </span>
+      </div>
+    ))}
 
-  {/* שאר הקומפוננטה שלך כאן */}
-
-  {/* שאר הקומפוננטה שלך ממשיכה כאן */}
+  </div>
+)}
       <h1>בחר תרופה</h1>
 
       <input
@@ -111,7 +104,7 @@ const [selectedMedicines, setSelectedMedicines] = useState<string[]>([]);  const
             search.trim()!=="" &&
             medicines.map((m: Medicine) => (
               <tr key={m.name}
-               onClick={() => toggleMedicine(m.name)}>
+                onClick={() => addMedicine(m.name)}>
                 <td>{m.name}</td>
               </tr>
             ))}
