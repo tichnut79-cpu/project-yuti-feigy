@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchMedicines,clearMedicines } from "./MedicineSearchSlice";
 import type { RootState, AppDispatch } from "../../App/store";
-
+import { motion, AnimatePresence } from "framer-motion";
 import "./MedicineSearch.css";
 
 type Medicine = {
