@@ -1,23 +1,28 @@
-import { Routes, Route } from "react-router-dom";
-import LoginWithGoogle from './components/Login/Login'
-import MedicineSearch from './components/MedicineSearch/MedicineSearch'
-import './App.css'
-import PharmaciesTable from "./components/PharmsTable/PharmsTable"
-
-
+import { useState } from "react";
+import PharmaciesTable from "./components/pharmsTable/PharmsTable";
 
 function App() {
-  return (
-    <PharmaciesTable
-      city="Tel Aviv"
-      userLat={32.0853}
-      userLng={34.7818}
-    />
-    // <Routes>
-    //   <Route path="/" element={<LoginWithGoogle></LoginWithGoogle>}></Route>
-    //   <Route path="/search" element={<MedicineSearch></MedicineSearch>}></Route>
-    // </Routes>
+  const [selectedCity, setSelectedCity] = useState("Tel Aviv");
 
+  console.log("selectedCity =", selectedCity);
+  return (
+    <div>
+      <select
+        value={selectedCity}
+        onChange={(e) => setSelectedCity(e.target.value)}
+      >
+        <option value="Tel Aviv">Tel Aviv</option>
+        <option value="Haifa">Haifa</option>
+        <option value="Jerusalem">Jerusalem</option>
+        <option value="Ashdod">Ashdod</option>
+      </select>
+
+      <PharmaciesTable
+        city={selectedCity}
+        userLat={32.0853}
+        userLng={34.7818}
+      />
+    </div>
   );
 }
 

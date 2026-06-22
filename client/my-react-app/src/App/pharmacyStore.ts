@@ -11,30 +11,24 @@ type PharmacyRow = {
   distanceKm: number;
   walkMinutes: number;
   queueLength: number;
-  selected: boolean;
 };
 
 type Store = {
-  data: PharmacyRow[];
+  pharmacies: PharmacyRow[];
+  selectedId: number | null;
   travelMode: TravelMode;
 
-  setData: (data: PharmacyRow[]) => void;
-  toggleSelect: (id: number) => void;
+  setPharmacies: (data: PharmacyRow[]) => void;
+  setSelectedId: (id: number | null) => void;
   setTravelMode: (mode: TravelMode) => void;
 };
 
 export const usePharmacyStore = create<Store>((set) => ({
-  data: [],
+  pharmacies: [],
+  selectedId: null,
   travelMode: "WALK",
 
-  setData: (data) => set({ data }),
-
-  toggleSelect: (id) =>
-    set((state) => ({
-      data: state.data.map((item) =>
-        item.id === id ? { ...item, selected: !item.selected } : item
-      ),
-    })),
-
+  setPharmacies: (data) => set({ pharmacies: data }),
+  setSelectedId: (id) => set({ selectedId: id }),
   setTravelMode: (mode) => set({ travelMode: mode }),
 }));

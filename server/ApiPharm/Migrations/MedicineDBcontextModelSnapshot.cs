@@ -39,30 +39,21 @@ namespace ApiPharm.Migrations
 
             modelBuilder.Entity("ApiPharm.Data.MedicineInPharm", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("IdPharm")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("IdMedicine")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("IdPharm")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("MedicineId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PharmId")
+                    b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("IdPharm", "IdMedicine");
 
-                    b.HasIndex("MedicineId");
-
-                    b.HasIndex("PharmId");
+                    b.HasIndex("IdMedicine");
 
                     b.ToTable("MedicineInPharm");
                 });
@@ -101,13 +92,13 @@ namespace ApiPharm.Migrations
                 {
                     b.HasOne("ApiPharm.Data.Medicine", "Medicine")
                         .WithMany("MedicinesInPharms")
-                        .HasForeignKey("MedicineId")
+                        .HasForeignKey("IdMedicine")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ApiPharm.Data.Pharm", "Pharm")
                         .WithMany("MedicinesInPharms")
-                        .HasForeignKey("PharmId")
+                        .HasForeignKey("IdPharm")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
