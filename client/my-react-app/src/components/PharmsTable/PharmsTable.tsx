@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../App/store";
 import "./PharmsTable.css";
 
 type Pharmacy = {
@@ -25,7 +27,9 @@ type Props = {
 export default function PharmaciesTable({ city, userLat, userLng }: Props) {
   const [data, setData] = useState<RowData[]>([]);
   const [travelMode, setTravelMode] = useState<"WALK" | "CAR">("WALK");
-
+  const selectedMedicines = useSelector(
+  (state: RootState) => state.selectedMedicines.items
+);
   useEffect(() => {
     async function load() {
       const res = await fetch("/api/pharmacies");
@@ -83,11 +87,24 @@ export default function PharmaciesTable({ city, userLat, userLng }: Props) {
 
   return (
     <div className="container">
+       <div>
+  <h3>תרופות שנבחרו</h3>
+
+  <div className="pharms-selected-list">
+    {selectedMedicines.map((m) => (
+      <div key={m} className="pharms-selected-item">
+        {m}
+      </div>
+    ))}
+  </div>
+</div>
+<br></br>
+<br></br>
+<br></br>
       <h2 className="title">
         Pharmacies near you in the city of {city}
       </h2>
 
-      
 
       <table className="table">
         <thead>
@@ -124,6 +141,10 @@ export default function PharmaciesTable({ city, userLat, userLng }: Props) {
           ))}
         </tbody>
       </table>
+       <div>
+
+  
+  </div>
       <div className="modeBar">
         <div className="topButtons">
         <button
