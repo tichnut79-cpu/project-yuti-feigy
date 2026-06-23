@@ -6,6 +6,7 @@ import { fetchMedicines,clearMedicines } from "./MedicineSearchSlice";
 import type { RootState, AppDispatch } from "../../App/store";
 import { motion, AnimatePresence } from "framer-motion";
 import "./MedicineSearch.css";
+import {addMedicine as addMedicineAction,removeMedicine as removeMedicineAction} from "./selectedMedicinesSlice"
 
 type Medicine = {
   id?: number;
@@ -20,7 +21,9 @@ const medicines = useSelector(
   ) as Medicine[];
 
   const [search, setSearch] = useState<string>("");
-  const [selectedMedicines, setSelectedMedicines] = useState<string[]>([]);
+  const selectedMedicines = useSelector(
+  (state: RootState) => state.selectedMedicines.items
+);
   const [error, setError] = useState(false);
   useEffect(() => {
     if(search.trim()===""){
@@ -33,18 +36,13 @@ const medicines = useSelector(
     return()=>clearTimeout(timeout);
   }, [search,dispatch]);
 
-  // const filteredMedicines = medicines.filter((medicine: Medicine) =>
-  //   medicine.name.toLowerCase().includes(search.toLowerCase())
-  // );
-const addMedicine = (name: string) => {
-  setSelectedMedicines((prev) =>
-    prev.includes(name) ? prev : [...prev, name]
-  );
+const addMedicineHandler  = (name: string) => {
+  dispatch(addMedicineAction(name));
+
 };
-const removeMedicine = (name: string) => {
-  setSelectedMedicines((prev) =>
-    prev.filter((m) => m !== name)
-  );
+const removeMedicineHandler  = (name: string) => {
+  dispatch(removeMedicineAction(name));
+
 };
   const handleSearchChange = (
     e: ChangeEvent<HTMLInputElement>
@@ -62,21 +60,22 @@ const removeMedicine = (name: string) => {
     <div className="selected-title">
       נבחרו {selectedMedicines.length} תרופות
     </div>
-
+      <div className="selected-list">
     {selectedMedicines.map((m) => (
       <div
         key={m}
         className="selected-item">
-        
+
         {m}
         <span className="remove-x"
-        onClick={() => removeMedicine(m)}
+        onClick={() => removeMedicineHandler(m)}
     >
       X
     </span>
       </div>
     ))}
 
+  </div>
   </div>
 )}
       <h1>בחר תרופה</h1>
@@ -94,7 +93,6 @@ const removeMedicine = (name: string) => {
         <table>
           <thead>
             <tr>
-              {/* <th>ID</th> */}
               <th>NAME</th>
             </tr>
           </thead>
@@ -104,7 +102,7 @@ const removeMedicine = (name: string) => {
             search.trim()!=="" &&
             medicines.map((m: Medicine) => (
               <tr key={m.name}
-                onClick={() => addMedicine(m.name)}>
+                onClick={() => addMedicineHandler(m.name)}>
                 <td>{m.name}</td>
               </tr>
             ))}
@@ -112,7 +110,6 @@ const removeMedicine = (name: string) => {
         </table>
       </div>
       <button className={`login-btn ${error ? "error-shake" : ""}`}
-      // disabled={!isValidMedicine}
       onClick={() =>{
         if(!isValidMedicine){
           setError(true);
