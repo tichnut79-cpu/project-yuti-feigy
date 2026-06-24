@@ -1,30 +1,50 @@
 import { Routes, Route } from "react-router-dom";
-import LoginWithGoogle from './components/Login/Login'
-import MedicineSearch from './components/MedicineSearch/MedicineSearch'
-import './App.css'
-import PharmaciesTable from "./components/PharmsTable/PharmsTable"
+import { useSelector } from "react-redux";
+import type { RootState } from "../src/App/store";
 
-
+import LoginWithGoogle from "./components/Login/Login";
+import MedicineSearch from "./components/MedicineSearch/MedicineSearch";
+import PharmaciesTable from "./components/PharmsTable/PharmsTable";
+import ProtectedRoute from "./components/ProtectedRouter/ProtectedRouter";
 
 function App() {
-  return (
-    // <PharmaciesTable
-    //   city="Tel Aviv"
-    //   userLat={32.0853}
-    //   userLng={34.7818}
-    // />
-    <Routes>
-       <Route path="/" element={<LoginWithGoogle></LoginWithGoogle>}></Route>
-       <Route path="/search" element={<MedicineSearch></MedicineSearch>}></Route>
-       <Route path="/pharmsTable" element={
-        <PharmaciesTable
-      city="Tel Aviv"
-      userLat={32.0853}
-      userLng={34.7818}
-    />}>
-       </Route>
-     </Routes>
+  const location = useSelector((state: RootState) => state.location);
+  const selectedMedicines = useSelector(
+    (state: RootState) => state.selectedMedicines.items
+  );
 
+  const isLocationValid =
+    location.city.trim() !== "" && location.street.trim() !== "";
+
+  const canEnterSearch =
+    isLocationValid && selectedMedicines.length > 0;
+
+  return (
+    <Routes>
+      <Route
+        path="/pharmsTable"
+        element={
+          <ProtectedRoute condition={canEnterSearch}>
+            <PharmaciesTable
+              city="Tel Aviv"
+              userLat={32.0853}
+              userLng={34.7818}
+            />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route path="/" element={<LoginWithGoogle />} />
+
+      <Route
+        path="/search"
+        element={
+          <ProtectedRoute condition={isLocationValid}>
+            <MedicineSearch />
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
   );
 }
 

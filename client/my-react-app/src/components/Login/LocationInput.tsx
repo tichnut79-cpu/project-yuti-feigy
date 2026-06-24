@@ -1,19 +1,27 @@
 const API = import.meta.env.VITE_API_URL;
-
-import { useRef,useState } from "react";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../App/store";
+import { useDispatch } from "react-redux";
+import { setCity, setStreet } from "../../Slices/locationSlice"; // עדכן נתיב
+import React, { useRef, useState } from "react";
 
 export default function LocationInput() {
-  const [city, setCity] = useState("");
-  const [street, setStreet] = useState("");
+  const dispatch = useDispatch();
 
+const [cityInput, setCityInput] = useState("");
+const [streetInput, setStreetInput] = useState("");
   const [results, setResults] = useState([]);
   const [timer, setTimer] = useState(null);
   const [streetResults, setStreetResults] = useState([]);
   const abortRef = useRef<AbortController | null>(null);
   const debounceRef = useRef<number | null>(null);
 
-const searchCities = (value) => {
-  setCity(value);
+  const city = useSelector((state: RootState) => state.location.city);
+  const street = useSelector((state: RootState) => state.location.street);
+
+  const searchCities = (value:string) => {
+  setCityInput(value);
+  dispatch(setCity(value));
 
   if (debounceRef.current) {
     clearTimeout(debounceRef.current);
@@ -51,14 +59,13 @@ const searchCities = (value) => {
 
 
   const searchStreets = async (value: string) => {
-  setStreet(value);
-
-  if (!value || !city) return;
-
-  const cleanCity = city;
+  setStreetInput(value);
+  dispatch(setStreet(value));
+if (!value || !cityInput) return;
+  const cleanCity = encodeURIComponent(cityInput);
 
   const res = await fetch(
-  `${API}/api/geo/streets?q=${value}&city=${encodeURIComponent(city)}`
+  `${API}/api/geo/streets?q=${value}&city=${encodeURIComponent(cityInput)}`
 );
   const data = await res.json();
   setStreetResults(data.value);
@@ -72,18 +79,23 @@ const searchCities = (value) => {
       <h3>City</h3>
 
       <input
-        value={city}
+        value={cityInput}
         onChange={(e) => searchCities(e.target.value)}
         placeholder="Enter city"
       />
-
+       {city.trim() === "" && (
+        <div className="field-warning">יש למלא שדה זה</div>
+          )}
       {results.length > 0 && (
         <div className="dropdown">
           {results.map((item, i) => (
             <div
               key={i}
               onClick={() => {
-                setCity(item.display?.split(",")[0] ?? "");
+                const selectedCity = item.display?.split(",")[0] ?? "";
+                setCityInput(selectedCity);
+                 dispatch(setCity(selectedCity));
+
                 setResults([]);
 }}
             >
@@ -99,18 +111,21 @@ const searchCities = (value) => {
       <h3>Street</h3>
 
       <input
-        value={street}
+        value={streetInput}
         onChange={(e) => searchStreets(e.target.value)}
         placeholder="Enter street"
       />
-
+      {street.trim() === "" && (
+      <div className="field-warning">יש למלא שדה זה</div>
+        )}
       {streetResults.length > 0 && (
         <div className="dropdown">
           {streetResults.map((item, i) => (
             <div
               key={i}
               onClick={() => {
-                setStreet(item.name);
+                setStreetInput(item.name);
+                dispatch(setStreet(item.name));
                 setStreetResults([]);
               }}
             >

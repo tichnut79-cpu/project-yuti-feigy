@@ -111,14 +111,14 @@ const removeMedicineHandler  = (name: string) => {
       </div>
       <button className={`login-btn ${error ? "error-shake" : ""}`}
       onClick={() =>{
-        if(!isValidMedicine){
+        if(selectedMedicines.length === 0){
           setError(true);
 
           setTimeout(()=>setError(false),600);
           return;
         }
         navigate("/pharmsTable", {
-  state: { medicines: selectedMedicines }
+  // state: { medicines: selectedMedicines }
 })}}>
             🔎Find Pharmacies
           </button>
