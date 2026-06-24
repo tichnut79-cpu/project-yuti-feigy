@@ -19,13 +19,36 @@ public class GeoService
     private void SetHeaders()
     {
         _http.DefaultRequestHeaders.UserAgent.Clear();
-        _http.DefaultRequestHeaders.UserAgent.ParseAdd("my-csharp-app");
+        _http.DefaultRequestHeaders.UserAgent.ParseAdd(
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) GeoApp/1.0");
     }
 
     private static string Normalize(string s)
 {
-    return (s ?? "")
-        .ToLower()
+    if (string.IsNullOrWhiteSpace(s))
+        return "";
+
+    s = s.ToLower();
+
+    // ניקוי בסיסי
+    s = s
+        .Replace("'", "")
+        .Replace("׳", "")
+        .Replace("\"", "")
+        .Replace("-", "")
+        .Replace(" ", "")
+        .Trim();
+
+    return s;
+}
+private static string Key(string s)
+{
+    if (string.IsNullOrWhiteSpace(s))
+        return "";
+
+    s = s.ToLower();
+
+    return s
         .Replace("'", "")
         .Replace("׳", "")
         .Replace("\"", "")
@@ -33,16 +56,75 @@ public class GeoService
         .Replace(" ", "")
         .Trim();
 }
+    private static string NormalizeMulti(string s)
+{
+    var n = Normalize(s);
 
+    // אם זה עברית – להשאיר
+    // אם זה אנגלית – להשאיר גם
+
+    return n;
+}
     public async Task<IActionResult> GetCities(string q)
 {
+    SetHeaders();
     if (string.IsNullOrWhiteSpace(q))
         return new OkObjectResult(Array.Empty<object>());
 
     var query = q.Trim();
-
+    var normalizedQuery = Normalize(query);
+    var queryKey = Key(query);
     var url =
-        $"https://nominatim.openstreetmap.org/search?format=json&q={Uri.EscapeDataString(query)}&countrycodes=il&limit=20&addressdetails=1";
+    $"https://nominatim.openstreetmap.org/search?format=json&q={Uri.EscapeDataString(query)}&countrycodes=il&limit=5&addressdetails=1&dedupe=1&accept-language=he";
+
+    JsonElement[] raw;
+
+    try
+    {
+        raw = await _http.GetFromJsonAsync<JsonElement[]>(url);
+    }
+    catch
+    {
+        return new OkObjectResult(Array.Empty<object>());
+    }
+
+    if (raw == null || raw.Length == 0)
+        return new OkObjectResult(Array.Empty<object>());
+
+var result = raw
+.Select(x => new
+{
+    display = x.GetProperty("display_name").GetString(),
+    key = Key(x.GetProperty("display_name").GetString())
+})
+.Select(x => new
+{
+    x.display,
+    score = x.key.Contains(queryKey) || queryKey.Contains(x.key)
+        ? -10
+        : Levenshtein(queryKey, x.key)
+})
+.OrderBy(x => x.score)
+.Take(5)
+.ToList();
+    return new OkObjectResult(result);
+}
+public async Task<IActionResult> GetStreets(string q, string city)
+{
+    SetHeaders();
+
+    if (string.IsNullOrWhiteSpace(q) || string.IsNullOrWhiteSpace(city))
+        return new OkObjectResult(Array.Empty<object>());
+
+    var query = $"{q},{city}";
+
+var url =
+$"https://nominatim.openstreetmap.org/search?format=json" +
+$"&street={Uri.EscapeDataString(q)}" +
+$"&city={Uri.EscapeDataString(city)}" +
+$"&countrycodes=il" +
+$"&addressdetails=1" +
+$"&limit=10";
 
     JsonElement[] raw;
 
@@ -60,27 +142,28 @@ public class GeoService
         return new OkObjectResult(Array.Empty<object>());
 
     var result = raw
-    .Where(x =>
-        x.TryGetProperty("class", out var c) &&
-        c.GetString() == "place" &&
-        x.TryGetProperty("type", out var t) &&
-        new[] { "city", "town", "village", "hamlet" }
-            .Contains(t.GetString())
-    )
-    .Select(x => new
-    {
-        display = x.GetProperty("display_name").GetString()
-    })
-    .GroupBy(x =>
-    {
-        var name = x.display ?? "";
-        return Normalize(name.Split(',')[0]); // 👈 רק שם העיר!
-    })
-    .Select(g => new
-    {
-        display = g.First().display
-    })
-    .ToList();
+        .Where(x =>
+            x.TryGetProperty("display_name", out var d) &&
+            !string.IsNullOrWhiteSpace(d.GetString())
+        )
+        .Select(x => new
+        {
+            display = x.GetProperty("display_name").GetString(),
+            name = (x.GetProperty("display_name").GetString() ?? "").Split(',')[0],
+            type = x.TryGetProperty("type", out var t) ? t.GetString() : "",
+            cls = x.TryGetProperty("class", out var c) ? c.GetString() : ""
+        })
+        .Where(x =>
+            // x.cls == "place" ||
+            x.cls == "highway"   // רחובות מגיעים כ-highway
+        )
+        .Select(x => new
+        {
+            display = x.display,
+            name = x.name
+        })
+        .ToList();
+
     return new OkObjectResult(result);
 }
     private static int Levenshtein(string a, string b)

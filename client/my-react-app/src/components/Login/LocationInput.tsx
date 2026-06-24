@@ -1,46 +1,74 @@
-import { useRef,useState } from "react";
+const API = import.meta.env.VITE_API_URL;
+import { useSelector } from "react-redux";
+import type { RootState } from "../../App/store";
+import { useDispatch } from "react-redux";
+import { setCity, setStreet } from "../../Slices/locationSlice"; // עדכן נתיב
+import React, { useRef, useState } from "react";
 
 export default function LocationInput() {
-  const [city, setCity] = useState("");
-  const [street, setStreet] = useState("");
+  const dispatch = useDispatch();
 
+const [cityInput, setCityInput] = useState("");
+const [streetInput, setStreetInput] = useState("");
   const [results, setResults] = useState([]);
-const [timer, setTimer] = useState(null);
+  const [timer, setTimer] = useState(null);
   const [streetResults, setStreetResults] = useState([]);
-  const timerRef = useRef(null);
-  // debounce פשוט
+  const abortRef = useRef<AbortController | null>(null);
+  const debounceRef = useRef<number | null>(null);
 
-  const searchCities = async (value) => {
-  setCity(value);
-    if (!value || value.trim().length === 0) {
-    setResults([]);
-    return;
+  const city = useSelector((state: RootState) => state.location.city);
+  const street = useSelector((state: RootState) => state.location.street);
+
+  const searchCities = (value:string) => {
+  setCityInput(value);
+  dispatch(setCity(value));
+
+  if (debounceRef.current) {
+    clearTimeout(debounceRef.current);
   }
-  if (timerRef.current) clearTimeout(timerRef.current);
+  if (abortRef.current) {
+    abortRef.current.abort();
+  }
 
-  timerRef.current=setTimeout(async()=>{
-    const res = await fetch(
-    `http://localhost:8080/api/geo/cities?q=${encodeURIComponent(value)}`
-  );
-  const data = await res.json();
-setResults(data);
-  },400);
+  const controller = new AbortController();
+  abortRef.current = controller;
 
+  debounceRef.current=setTimeout(async () => {
+    if (value.trim().length<2) {
+      setResults([]);
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `${API}/api/geo/cities?q=${value}`,
+        { signal: controller.signal }
+      );
+
+      const data = await res.json();
+      setResults(data.value);
+    } catch (err) {
+      if (err.name === "AbortError") {
+        return; // ← זה התקין
+      }
+      console.error(err);
+    }
+  }, 400);
 };
 
+
+
   const searchStreets = async (value: string) => {
-  setStreet(value);
-
-  if (!value || !city) return;
-
-  const cleanCity = city.split(",")[0];
+  setStreetInput(value);
+  dispatch(setStreet(value));
+if (!value || !cityInput) return;
+  const cleanCity = encodeURIComponent(cityInput);
 
   const res = await fetch(
-    `http://localhost:8080/api/geo/streets?q=${value}&city=${encodeURIComponent(cleanCity)}`
-  );
-
+  `${API}/api/geo/streets?q=${value}&city=${encodeURIComponent(cityInput)}`
+);
   const data = await res.json();
-  setStreetResults(data);
+  setStreetResults(data.value);
 };
 
   return (
@@ -51,18 +79,23 @@ setResults(data);
       <h3>City</h3>
 
       <input
-        value={city}
+        value={cityInput}
         onChange={(e) => searchCities(e.target.value)}
         placeholder="Enter city"
       />
-
+       {city.trim() === "" && (
+        <div className="field-warning">יש למלא שדה זה</div>
+          )}
       {results.length > 0 && (
         <div className="dropdown">
           {results.map((item, i) => (
             <div
               key={i}
               onClick={() => {
-                setCity(item.display ?? "");
+                const selectedCity = item.display?.split(",")[0] ?? "";
+                setCityInput(selectedCity);
+                 dispatch(setCity(selectedCity));
+
                 setResults([]);
 }}
             >
@@ -78,18 +111,21 @@ setResults(data);
       <h3>Street</h3>
 
       <input
-        value={street}
+        value={streetInput}
         onChange={(e) => searchStreets(e.target.value)}
         placeholder="Enter street"
       />
-
+      {street.trim() === "" && (
+      <div className="field-warning">יש למלא שדה זה</div>
+        )}
       {streetResults.length > 0 && (
         <div className="dropdown">
           {streetResults.map((item, i) => (
             <div
               key={i}
               onClick={() => {
-                setStreet(item.name);
+                setStreetInput(item.name);
+                dispatch(setStreet(item.name));
                 setStreetResults([]);
               }}
             >

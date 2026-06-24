@@ -2,8 +2,9 @@ import "./Login.css";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import React from "react";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../App/store";
 import LocationInput from "./LocationInput";
-
 interface CredentialResponse {
   credential?: string;
   select_by?: string;
@@ -20,7 +21,15 @@ const LoginWithGoogle: React.FC = () => {
   const handleError = () => {
     console.log("Google login failed");
   };
+  const handleLogin = () => {
+  navigate("/search");
+  }
 
+const city = useSelector((state: RootState) => state.location.city);
+const street = useSelector((state: RootState) => state.location.street);
+
+const isLocationValid =
+  city.trim() !== "" && street.trim() !== "";
   return (
     <GoogleOAuthProvider clientId={clientId}>
       <div className="login-page">
@@ -50,9 +59,13 @@ const LoginWithGoogle: React.FC = () => {
           </datalist>
           </div>
 
-          <button className="login-btn" onClick={() => navigate("/search")}>
-            Sign in
-          </button>
+          <button
+  className={`login-btn ${!isLocationValid ? "disabled-btn" : ""}`}
+  onClick={handleLogin}
+  disabled={!isLocationValid}
+>
+  Sign in
+</button>
 
           <div className="divider">
             or

@@ -48,6 +48,9 @@ body {
 
 .input-group {
     margin-bottom: 20px;
+    /* font-size: 12px; */
+  /* color: red; */
+  margin-top: 4px;
 }
 
 .input-group label {
@@ -171,4 +174,25 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+.disabled-btn {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.login-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.form-hint {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.login-btn:disabled,
+.disabled-btn {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
