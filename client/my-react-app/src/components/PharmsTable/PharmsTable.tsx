@@ -19,14 +19,15 @@ type RowData = Pharmacy & {
 };
 
 type Props = {
-  city: string;
   userLat: number;
   userLng: number;
 };
 
-export default function PharmaciesTable({ city, userLat, userLng }: Props) {
+export default function PharmaciesTable({userLat, userLng }: Props) {
   const [data, setData] = useState<RowData[]>([]);
   const [travelMode, setTravelMode] = useState<"WALK" | "CAR">("WALK");
+  const cityUser = useSelector((state: RootState) => state.location.city);
+  const streetUser = useSelector((state: RootState) => state.location.street);
   const selectedMedicines = useSelector(
   (state: RootState) => state.selectedMedicines.items
 );
@@ -102,9 +103,11 @@ export default function PharmaciesTable({ city, userLat, userLng }: Props) {
 <br></br>
 <br></br>
       <h2 className="title">
-        Pharmacies near you in the city of {city}
+        Pharmacies near you in the city of --{cityUser}--
       </h2>
-
+      <p>
+  Selected street: {streetUser}
+</p>
 
       <table className="table">
         <thead>
