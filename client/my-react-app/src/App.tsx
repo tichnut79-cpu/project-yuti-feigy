@@ -26,7 +26,6 @@ function App() {
         element={
           <ProtectedRoute condition={canEnterSearch}>
             <PharmaciesTable
-              city="Tel Aviv"
               userLat={32.0853}
               userLng={34.7818}
             />
