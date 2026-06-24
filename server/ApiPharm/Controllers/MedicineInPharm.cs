@@ -26,27 +26,68 @@ namespace ApiPharm.Controllers
             return Ok(data);
         }
 
-        [HttpPost("add-medicine")]
-        public IActionResult AddMedicineToPharm(Guid pharmId, Guid medicineId)
+        // [HttpPost("add-medicine")]
+        // public IActionResult AddMedicineToPharm(Guid pharmId, Guid medicineId)
+        // {
+        //     var link = new MedicineInPharm
+        //     {
+        //         IdPharm = pharmId,
+        //         IdMedicine = medicineId
+        //     };
+
+        //     _context.MedicineInPharm.Add(link);
+        //     _context.SaveChanges();
+
+        //     return Ok();
+        // }
+
+        // [HttpPost]
+        // public IActionResult AddPharm(Pharm pharm)
+        // {
+        //     _context.Pharms.Add(pharm);
+        //     _context.SaveChanges();
+        //     return Ok();
+        // }
+
+        [HttpPost("seed")]
+        public async Task<IActionResult> SeedMedicineInPharms()
         {
-            var link = new MedicineInPharm
+            var pharms = await _context.Pharms.ToListAsync();
+
+            if (!pharms.Any())
+                return BadRequest("No pharms");
+
+            var random = new Random();
+            var result = new List<MedicineInPharm>();
+
+            foreach (var pharm in pharms)
             {
-                IdPharm = pharmId,
-                IdMedicine = medicineId
-            };
+                var count = random.Next(50, 100);
 
-            _context.MedicineInPharm.Add(link);
-            _context.SaveChanges();
+                var selectedMedicines = await _context.Medicines
+                    .OrderBy(x => Guid.NewGuid())   // DB-side random
+                    .Take(count)
+                    .Select(m => m.Id)
+                    .ToListAsync();
 
-            return Ok();
-        }
+                foreach (var medicineId in selectedMedicines)
+                {
+                    result.Add(new MedicineInPharm
+                    {
+                        IdPharm = pharm.Id,
+                        IdMedicine = medicineId,
+                        Quantity = random.Next(10, 100)
+                    });
+                }
+            }
 
-        [HttpPost]
-        public IActionResult AddPharm(Pharm pharm)
-        {
-            _context.Pharms.Add(pharm);
-            _context.SaveChanges();
-            return Ok();
+            await _context.MedicineInPharm.AddRangeAsync(result);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                total = result.Count
+            });
         }
     }
 }

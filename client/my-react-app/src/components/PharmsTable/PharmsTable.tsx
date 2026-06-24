@@ -17,13 +17,19 @@ type RowData = Pharmacy & {
     queueLength: number;
 };
 
+type Medicine = {
+    id: string;
+    name: string;
+};
+
 type Props = {
     city: string;
     userLat: number;
     userLng: number;
+    medicines: Medicine[];
 };
 
-export default function PharmaciesTable({ city, userLat, userLng }: Props) {
+export default function PharmaciesTable({ city, userLat, userLng, medicines }: Props) {
     const {
         pharmacies,
         setPharmacies,
@@ -35,8 +41,10 @@ export default function PharmaciesTable({ city, userLat, userLng }: Props) {
 
     useEffect(() => {
         async function load() {
+            const medicineIds = medicines.map(m => m.id).join(",");
+
             const res = await fetch(
-                `http://localhost:8080/api/pharm?city=${city}`
+                `http://localhost:8080/api/pharm/search?city=${city}&medicineIds=${medicineIds}`
             );
 
             if (!res.ok) {
@@ -44,16 +52,20 @@ export default function PharmaciesTable({ city, userLat, userLng }: Props) {
                 return;
             }
 
-            const data: Pharmacy[] = await res.json();
-            const mapped = data.map((p) => ({
+            const data = await res.json();
+
+            const mapped = data.map((p: any) => ({
                 ...p,
                 queueLength: p.waiting_quantity ?? p.Waiting_quantity,
             }));
+
             setPharmacies(mapped);
         }
 
-        if (city) load();
-    }, [city]);
+        if (city && medicines.length > 0) {
+            load();
+        }
+    }, [city, medicines]);
 
     // function toggleSelect(id: number) {
     //     setData((prev) =>
