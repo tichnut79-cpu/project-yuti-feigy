@@ -5,7 +5,8 @@ import type { RootState } from "../src/App/store";
 import LoginWithGoogle from "./components/Login/Login";
 import MedicineSearch from "./components/MedicineSearch/MedicineSearch";
 import PharmaciesTable from "./components/PharmsTable/PharmsTable";
-import ProtectedRoute from "./components/ProtectedRouter/ProtectedRouter";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import Admin from "./components/Admin/Admin";
 
 function App() {
   const location = useSelector((state: RootState) => state.location);
@@ -43,6 +44,14 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+  path="/admin"
+  element={
+   <ProtectedRoute requireAuth>
+    <Admin></Admin>
+   </ProtectedRoute>
+  }
+/>
     </Routes>
   );
 }

@@ -1,7 +1,7 @@
+using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using ApiPharm.Models;
 using System.Linq.Expressions;
-
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
@@ -25,8 +25,32 @@ builder.Services.AddDbContext<MedicineDBcontext>(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header
+    });
 
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact", policy =>
@@ -60,7 +84,7 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseCors("AllowReact");
-
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
