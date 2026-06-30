@@ -11,7 +11,6 @@ export default function LocationInput() {
 const [cityInput, setCityInput] = useState("");
 const [streetInput, setStreetInput] = useState("");
   const [results, setResults] = useState([]);
-  const [timer, setTimer] = useState(null);
   const [streetResults, setStreetResults] = useState([]);
   const abortRef = useRef<AbortController | null>(null);
   const debounceRef = useRef<number | null>(null);
