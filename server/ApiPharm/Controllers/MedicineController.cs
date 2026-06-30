@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ApiPharm.Data;
 using ApiPharm.Models;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 namespace ApiPharm.Controllers
 {
     [ApiController]
@@ -26,7 +27,16 @@ public async Task<ActionResult<IEnumerable<Medicine>>> GetMedicines([FromQuery] 
 
     return Ok(medicines);
 }
+[HttpGet("admin/all")]
+[Authorize]
+public async Task<ActionResult<IEnumerable<Medicine>>> GetAllMedicinesForAdmin()
+{
+    var medicines = await _context.Medicines
+        .OrderBy(m => m.Name)
+        .ToListAsync();
 
+    return Ok(medicines);
+}
         [HttpGet("by-name/{name}")]
         public async Task<ActionResult<Medicine>> GetMedicineByName(string name)
         {

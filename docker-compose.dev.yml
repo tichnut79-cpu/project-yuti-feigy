@@ -24,6 +24,11 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://0.0.0.0:8080
+
+      Jwt__Key: "this_is_a_very_long_secret_key_for_jwt_1234567890_secure"
+      Jwt__Issuer: ApiPharm
+      Jwt__Audience: ApiPharmUsers
+
       ConnectionStrings__DefaultConnection: >
         Server=sqlserver;
         Database=${DB_NAME};

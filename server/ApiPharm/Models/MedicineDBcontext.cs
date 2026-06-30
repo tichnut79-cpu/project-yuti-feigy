@@ -11,8 +11,8 @@ namespace ApiPharm.Models{
         }
 
         public DbSet<Medicine> Medicines {get;set;}
-        public DbSet<Pharm> Pharms {get;set;}	 
-        public DbSet<MedicineInPharm> MedicineInPharm {get;set;} 
+        public DbSet<Pharm> Pharms {get;set;}
+        public DbSet<MedicineInPharm> MedicineInPharm {get;set;}
 
     }
 
