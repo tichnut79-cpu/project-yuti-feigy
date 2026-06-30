@@ -28,7 +28,7 @@ public async Task<ActionResult<IEnumerable<Medicine>>> GetMedicines([FromQuery] 
     return Ok(medicines);
 }
 [HttpGet("admin/all")]
-[Authorize(Roles = "admin")]
+[Authorize]
 public async Task<ActionResult<IEnumerable<Medicine>>> GetAllMedicinesForAdmin()
 {
     var medicines = await _context.Medicines

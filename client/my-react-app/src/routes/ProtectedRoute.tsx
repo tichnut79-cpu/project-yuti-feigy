@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import type { RootState } from "../../App/store";
+import type { RootState } from "../App/store";
 
 type Props = {
   children: ReactNode;
@@ -17,6 +17,7 @@ const ProtectedRoute = ({
   redirectTo = "/",
 }: Props) => {
   const token = useSelector((state: RootState) => state.auth.token);
+  if (!token) return <Navigate to="/" />;
 
   // 🔐 בדיקת התחברות (JWT)
   if (requireAuth && !token) {

@@ -1,5 +1,9 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
 using ApiPharm.Models;
 using System.Linq.Expressions;
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +17,10 @@ var dbName = Environment.GetEnvironmentVariable("DB_NAME");
 var dbUser = Environment.GetEnvironmentVariable("DB_USER");
 var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
 
+var jwtKey = builder.Configuration["Jwt:Key"]
+    ?? Environment.GetEnvironmentVariable("Jwt__Key")
+    ?? throw new Exception("JWT KEY MISSING");
+
 var connectionString = $"Server=sqlserver;" +
                        $"Database={dbName};" +
                        $"User Id={dbUser};" +
@@ -23,7 +31,6 @@ var connectionString = $"Server=sqlserver;" +
 builder.Services.AddDbContext<MedicineDBcontext>(options =>
     options.UseSqlServer(connectionString));
 
-builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -57,8 +64,8 @@ builder.Services.AddCors(options =>
     {
         policy
             .WithOrigins(
-                "http://localhost",
-                "http://localhost:80",
+                // "http://localhost",
+                // "http://localhost:80",
                 "http://localhost:5173",
                 "http://127.0.0.1:5173"
             )
@@ -66,6 +73,29 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
     });
 });
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtKey)
+        ),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+
+        // חשוב לדיבאג
+        ClockSkew = TimeSpan.Zero
+    };
+});
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -84,8 +114,15 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseCors("AllowReact");
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
 
+app.UseAuthentication();   // 👈 לפני Authorization
+app.UseAuthorization();
+
+app.Use(async (ctx, next) =>
+{
+    Console.WriteLine("AUTH HEADER: " + ctx.Request.Headers.Authorization);
+    await next();
+});
+
+app.MapControllers();
 app.Run();

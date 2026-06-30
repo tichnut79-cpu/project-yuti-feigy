@@ -8,6 +8,7 @@ import { setToken } from "../../Slices/authSlice";
 import React from "react";
 import type { RootState } from "../../App/store";
 import LocationInput from "./LocationInput";
+const codeAdmin=import.meta.env.CODE_ADMIN;
 interface CredentialResponse {
   credential?: string;
   select_by?: string;
@@ -22,9 +23,13 @@ const LoginWithGoogle: React.FC = () => {
   const res = await fetch("http://localhost:8080/api/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ password: "1111" }),
+    body: JSON.stringify({ password: codeAdmin}),
   });
-
+if (!res.ok) {
+  const text = await res.text();
+  console.error("Server error:", text);
+  return;
+}
   const data = await res.json();
 
   dispatch(setToken(data.token)); // 🔥 קריטי
@@ -46,10 +51,15 @@ const handleAdminLogin = async () => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ password: adminPassword }),
   });
-
+if (!res.ok) {
+  const text = await res.text();
+  console.error("Server error:", text);
+  return;
+}
   const data = await res.json();
   console.log("TOKEN:", data.token);
   dispatch(setToken(data.token));   // שומר JWT
+  localStorage.setItem("token", data.token);
   navigate("/admin");               // מעבר ל-ADMIN
 };
 

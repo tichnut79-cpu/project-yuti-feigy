@@ -3,16 +3,14 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Security.Claims;
-using System.Text;
 namespace ApiPharm.Controllers;
-
 [ApiController]
 [Route("api/auth")]
 public class AuthController : ControllerBase
 {
     private readonly IConfiguration _config;
-
+    private readonly string _codeAdmin =
+        Environment.GetEnvironmentVariable("CODE_ADMIN");
     public AuthController(IConfiguration config)
     {
         _config = config;
