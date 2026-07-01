@@ -17,7 +17,7 @@ const ProtectedRoute = ({
   redirectTo = "/",
 }: Props) => {
   const token = useSelector((state: RootState) => state.auth.token);
-  if (!token) return <Navigate to="/" />;
+  // if (!token) return <Navigate to="/" />;
 
   // 🔐 בדיקת התחברות (JWT)
   if (requireAuth && !token) {
