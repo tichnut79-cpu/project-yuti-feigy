@@ -11,6 +11,7 @@ import LocationInput from "./LocationInput";
 import { setCity, setStreet,setManualConfirmed } from "../../Slices/locationSlice";
 import icons from "../Icons/Icons"
 import {setLocationReady} from "../../Slices/locationSlice"
+import AutoLocation from "../AutoLocation/AutoLocation";
 const codeAdmin=import.meta.env.CODE_ADMIN;
 interface CredentialResponse {
   credential?: string;
@@ -25,6 +26,15 @@ const LoginWithGoogle: React.FC = () => {
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [geoReady, setGeoReady] = useState(false);
   const [autoLocationConfirmed, setAutoLocationConfirmed] = useState(true);
+const [autoLocationTrigger, setAutoLocationTrigger] = useState<number>(0);
+  const handleLocationResult = (city: string, street: string) => {
+    console.log("RECEIVED IN LOGIN:", city, street);
+      dispatch(setCity(city));
+      dispatch(setStreet(street));
+      dispatch(setLocationReady(true));
+      setAutoLocationConfirmed(true);
+    };
+
   const navigate = useNavigate();
 
   const handleSuccess = async (response: any) => {
@@ -40,7 +50,7 @@ if (!res.ok) {
 }
   const data = await res.json();
 
-  dispatch(setToken(data.token)); 
+  dispatch(setToken(data.token));
   navigate("/search");
 };
   useEffect(() => {
@@ -67,6 +77,7 @@ if (!res.ok) {
         dispatch(setStreet(data.street));
         dispatch(setLocationReady(true));
         setGeoReady(true);
+        setAutoLocationConfirmed(true);
       }
     } catch (e) {
       console.error(e);
@@ -100,7 +111,9 @@ const canEnter =
 const canSave = city.trim().length > 0 && street.trim().length > 0;
   return (
   <GoogleOAuthProvider clientId={clientId}>
-
+      <AutoLocation
+        onLocationResult={handleLocationResult}
+        trigger={autoLocationTrigger}/>
     <div className="input-group">
     </div>
 
@@ -121,9 +134,11 @@ const canSave = city.trim().length > 0 && street.trim().length > 0;
 
   <div
     className={`location-card ${useAutoLocation ? "active" : ""}`}
-    onClick={() => {setUseAutoLocation(true);
+    onClick={() => {
+      setUseAutoLocation(true);
       dispatch(setLocationReady(false));
       setAutoLocationConfirmed(true);
+      setAutoLocationTrigger(prev => prev + 1); // מפעיל את AutoLocation
     }}
   >
     <div className="card-icon">{icons.gps()}</div>
