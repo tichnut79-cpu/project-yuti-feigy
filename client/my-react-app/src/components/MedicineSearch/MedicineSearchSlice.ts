@@ -5,7 +5,6 @@ export interface Medicine {
   id: number;
   name: string;
 }
-console.log("API_URL =", API_URL);
 /* 🔹 GET request לשרת */
 export const fetchMedicines = createAsyncThunk<Medicine[],string>(
   "medicineSearch/fetchMedicines",

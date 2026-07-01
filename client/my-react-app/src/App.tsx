@@ -17,8 +17,11 @@ function App() {
   const isLocationValid =
     location.city.trim() !== "" && location.street.trim() !== "";
 
+  const locationReady = useSelector(
+  (state: RootState) => state.location.locationReady
+);
   const canEnterSearch =
-    isLocationValid && selectedMedicines.length > 0;
+    !locationReady   && selectedMedicines.length > 0;
 
   return (
     <Routes>
@@ -39,7 +42,7 @@ function App() {
       <Route
         path="/search"
         element={
-          <ProtectedRoute condition={isLocationValid}>
+          <ProtectedRoute condition={useSelector((s: RootState) => s.location.onboardingComplete)}>
             <MedicineSearch />
           </ProtectedRoute>
         }

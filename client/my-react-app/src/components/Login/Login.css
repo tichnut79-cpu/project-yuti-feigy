@@ -8,6 +8,9 @@ body {
   font-family: 'Heebo', sans-serif;
 
 }
+
+
+
 .login-page {
     height: 100vh;
     display: flex;
@@ -153,18 +156,32 @@ body {
   top: 100%;
   left: 0;
   right: 0;
-
+  animation: fadeIn 0.15s ease;
   background: white;
   border: 1px solid #ddd;
-  z-index: 9999;
+  border-radius: 10px;
+  z-index: 1000;
 
-  max-height: 200px;
+  max-height: 250px;
   overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
 }
-
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 .dropdown div {
   padding: 8px;
   cursor: pointer;
+  font-size: 14px;
+  color: #1f2a44;
+  transition: 0.15s;
 }
 
 .dropdown div:hover {
@@ -180,10 +197,10 @@ body {
   cursor: not-allowed;
 }
 
-.login-btn:disabled {
+/* .login-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
+} */
 .form-hint {
   margin-top: 10px;
   margin-bottom: 10px;
@@ -194,5 +211,230 @@ body {
 .login-btn:disabled,
 .disabled-btn {
   opacity: 0.5;
+  cursor: not-allowed;
+}
+.location-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+/* כרטיס בסיס */
+.location-card {
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #f9fbff;
+  cursor: pointer;
+  transition: 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* hover */
+.location-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.06);
+}
+
+/* מצב נבחר */
+.location-card.active {
+  border-color: #4f7cff;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(79,124,255,0.15);
+}
+
+/* כותרת */
+.location-card .title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2a44;
+}
+
+/* תיאור */
+.location-card .desc {
+  font-size: 12px;
+  color: #64748b;
+}
+
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: visible;
+}
+
+/* רקע כהה עם blur */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* כותרת */
+.modal-content h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2a44;
+  margin: 0;
+  text-align: center;
+}
+
+/* אנימציה */
+@keyframes popIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* אזור תוכן (אם יש LocationInput) */
+.modal-content .input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* כפתור בתוך modal */
+.modal-content .login-btn {
+  margin-top: 10px;
+}
+
+/* כפתור סגירה קטן (אם תוסיף) */
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  cursor: pointer;
+  font-size: 18px;
+  color: #64748b;
+}
+
+/* רקע כללי */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* חלון */
+.modal-content {
+  width: 420px;
+  height: 300px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.35);
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  animation: modalIn 0.2s ease-out;
+  font-family: system-ui, sans-serif;
+}
+
+/* אנימציה */
+@keyframes modalIn {
+  from {
+    transform: translateY(10px) scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* כותרת */
+.modal-content h2 {
+  margin: 0;
+  padding: 18px 20px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2a44;
+  border-bottom: 1px solid #eef2f7;
+  background: #ffffff;
+}
+
+/* אזור תוכן */
+.modal-content {
+  padding: 20px;
+  gap: 14px;
+  background: #f8fafc;
+}
+
+/* עטיפה של input (אם LocationInput משתמש בזה) */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* label */
+.input-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+/* input עצמו */
+input {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
+  background: white;
+  color: #1f2a44;
+}
+
+/* focus */
+input:focus {
+  border-color: #4f7cff;
+  box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.15);
+}
+
+/* placeholder */
+input::placeholder {
+  color: #94a3b8;
+}
+
+/* כפתור */
+.modal-content .login-btn {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #4f7cff;
+  color: white;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+/* hover */
+.modal-content .login-btn:hover {
+  background: #3b66ff;
+}
+
+/* disabled */
+.modal-content .login-btn:disabled {
+  background: #cbd5e1;
   cursor: not-allowed;
 }
