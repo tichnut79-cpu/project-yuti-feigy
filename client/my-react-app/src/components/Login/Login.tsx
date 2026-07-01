@@ -22,10 +22,9 @@ const LoginWithGoogle: React.FC = () => {
 
   const [adminPassword, setAdminPassword] = useState("");
   const [loadingLocation, setLoadingLocation] = useState(false);
-  const [useAutoLocation, setUseAutoLocation] = useState<boolean>(true);
-  const [showLocationModal, setShowLocationModal] = useState(false);
+const [useAutoLocation, setUseAutoLocation] = useState<boolean | null>(null);  const [showLocationModal, setShowLocationModal] = useState(false);
   const [geoReady, setGeoReady] = useState(false);
-  const [autoLocationConfirmed, setAutoLocationConfirmed] = useState(true);
+  const [autoLocationConfirmed, setAutoLocationConfirmed] = useState(false);
 const [autoLocationTrigger, setAutoLocationTrigger] = useState<number>(0);
   const handleLocationResult = (city: string, street: string) => {
     console.log("RECEIVED IN LOGIN:", city, street);
@@ -133,7 +132,7 @@ const canSave = city.trim().length > 0 && street.trim().length > 0;
           <div className="location-toggle">
 
   <div
-    className={`location-card ${useAutoLocation ? "active" : ""}`}
+    className={`location-card ${useAutoLocation === true ? "active" : ""}`}
     onClick={() => {
       setUseAutoLocation(true);
       dispatch(setLocationReady(false));
@@ -146,9 +145,7 @@ const canSave = city.trim().length > 0 && street.trim().length > 0;
     <div className="desc">Detect my location automatically</div>
   </div>
 
-  <div
-  className={`location-card ${useAutoLocation === false ? "active" : ""}`}
-  onClick={() => {
+  <div className={`location-card ${useAutoLocation === false ? "active" : ""}`}  onClick={() => {
     setUseAutoLocation(false);
     setShowLocationModal(true);
   }}
