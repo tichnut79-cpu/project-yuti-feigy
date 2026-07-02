@@ -3,6 +3,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using System.Text;
 using ApiPharm.Models;
 using System.Linq.Expressions;
@@ -96,8 +97,18 @@ builder.Services.AddAuthentication(options =>
     };
 });
 builder.Services.AddAuthorization();
-
+builder.Services.AddHttpClient();
 var app = builder.Build();
+
+// 👇 חשוב מאוד - חייב להיות ראשון לפני שאר ה-middleware
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor |
+        ForwardedHeaders.XForwardedProto,
+    KnownNetworks = { },
+    KnownProxies = { }
+});
 
 using(var scope=app.Services.CreateAsyncScope())
 {
@@ -117,6 +128,8 @@ app.UseCors("AllowReact");
 
 app.UseAuthentication();   // 👈 לפני Authorization
 app.UseAuthorization();
+
+
 
 app.Use(async (ctx, next) =>
 {

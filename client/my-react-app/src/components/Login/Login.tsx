@@ -12,6 +12,7 @@ import { setCity, setStreet,setManualConfirmed } from "../../Slices/locationSlic
 import icons from "../Icons/Icons"
 import {setLocationReady} from "../../Slices/locationSlice"
 import AutoLocation from "../AutoLocation/AutoLocation";
+// import AutoLocation from "../AutoLocation2/AutoLocation2"
 const codeAdmin=import.meta.env.CODE_ADMIN;
 interface CredentialResponse {
   credential?: string;
@@ -22,10 +23,10 @@ const LoginWithGoogle: React.FC = () => {
 
   const [adminPassword, setAdminPassword] = useState("");
   const [loadingLocation, setLoadingLocation] = useState(false);
-const [useAutoLocation, setUseAutoLocation] = useState<boolean | null>(null);  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [useAutoLocation, setUseAutoLocation] = useState<boolean | null>(null);  const [showLocationModal, setShowLocationModal] = useState(false);
   const [geoReady, setGeoReady] = useState(false);
   const [autoLocationConfirmed, setAutoLocationConfirmed] = useState(false);
-const [autoLocationTrigger, setAutoLocationTrigger] = useState<number>(0);
+  const [autoLocationTrigger, setAutoLocationTrigger] = useState<number>(0);
   const handleLocationResult = (city: string, street: string) => {
     console.log("RECEIVED IN LOGIN:", city, street);
       dispatch(setCity(city));
@@ -60,32 +61,9 @@ if (!res.ok) {
 
   setLoadingLocation(true);
 
-  navigator.geolocation.getCurrentPosition(async (pos) => {
-    try {
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/geo/reverse?lat=${lat}&lng=${lng}`
-      );
-
-      const data = await res.json();
-
-      if (data.city && data.street) {
-        dispatch(setCity(data.city));
-        dispatch(setStreet(data.street));
-        dispatch(setLocationReady(true));
-        setGeoReady(true);
-        setAutoLocationConfirmed(true);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoadingLocation(false);
-    }
-  }, () => {
-    setLoadingLocation(false);
-  });
+  // () => {
+  //   setLoadingLocation(false);
+  // });
 
 }, [useAutoLocation]);
 
