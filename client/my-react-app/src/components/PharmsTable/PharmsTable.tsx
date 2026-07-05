@@ -87,87 +87,107 @@ export default function PharmaciesTable({userLat, userLng }: Props) {
   }
 
   return (
-    <div className="container">
-       <div>
-  <h3>תרופות שנבחרו</h3>
+  <div className="pharms-layout">
 
-  <div className="pharms-selected-list">
-    {selectedMedicines.map((m) => (
-      <div key={m} className="pharms-selected-item">
-        {m}
-      </div>
-    ))}
-  </div>
-</div>
-<br></br>
-<br></br>
-<br></br>
+    {/* MAIN AREA */}
+    <div className="pharms-main">
+
       <h2 className="title">
-        Pharmacies near you in the city of --{cityUser}--
+        Pharmacies near you in {cityUser}
       </h2>
-      <p>
-  Selected street: {streetUser}
-</p>
 
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Select</th>
-            <th>Name</th>
-            <th>Address</th>
-            <th>Distance (km)</th>
-            <th>Queue Length</th>
-            <th>Walk Minutes</th>
-          </tr>
-        </thead>
+      <p className="sub">
+        Selected street: {streetUser}
+      </p>
 
-        <tbody>
-          {data.map((row) => (
-            <tr key={row.id}>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={row.selected}
-                  onChange={() => toggleSelect(row.id)}
-                />
-              </td>
-              <td>{row.name}</td>
-              <td>{row.address}</td>
-              <td>{row.distanceKm}</td>
-              <td>{row.queueLength}</td>
-              <td>
-                {travelMode === "WALK"
-                  ? row.walkMinutes
-                  : Math.round(row.walkMinutes / 3)}
-              </td>
+      <div className="table-wrapper">
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Select</th>
+              <th>Name</th>
+              <th>Address</th>
+              <th>Distance (km)</th>
+              <th>Queue</th>
+              <th>Time</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-       <div>
+          </thead>
 
-  
-  </div>
-      <div className="modeBar">
-        <div className="topButtons">
-        <button
-          className={travelMode === "WALK" ? "active" : ""}
-          onClick={() => setTravelMode("WALK")}
-        >
-          Walk
-        </button>
-
-        <button
-          className={travelMode === "CAR" ? "active" : ""}
-          onClick={() => setTravelMode("CAR")}
-        >
-          Travel
-        </button>
-          </div>
-        <button className="mapBtn" onClick={openMap}>
-          To Map
-        </button>
+          <tbody>
+            {data.map((row) => (
+              <tr key={row.id}>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={row.selected}
+                    onChange={() => toggleSelect(row.id)}
+                  />
+                </td>
+                <td>{row.name}</td>
+                <td>{row.address}</td>
+                <td>{row.distanceKm}</td>
+                <td>{row.queueLength}</td>
+                <td>
+                  {travelMode === "WALK"
+                    ? row.walkMinutes
+                    : Math.round(row.walkMinutes / 3)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
+
     </div>
-  );
+
+    {/* SIDEBAR */}
+    <div className="pharms-sidebar">
+
+      <h3>Selected Medicines</h3>
+
+      <div className="med-list">
+        {selectedMedicines.map((m) => (
+          <div key={m} className="med-item">
+            {m}
+          </div>
+        ))}
+      </div>
+
+    </div>
+
+    {/* ACTION BAR */}
+   <div className="modeBar">
+
+  <div className="mode-group">
+    <span className="mode-title">Mode</span>
+
+    <button
+      className={travelMode === "WALK" ? "active" : ""}
+      onClick={() => setTravelMode("WALK")}
+    >
+      Walk
+    </button>
+
+    <button
+      className={travelMode === "CAR" ? "active" : ""}
+      onClick={() => setTravelMode("CAR")}
+    >
+      Car
+    </button>
+  </div>
+
+  <div className="mode-info">
+    {selectedMedicines.length} selected
+  </div>
+
+  <div className="mode-action">
+    <button className="mapBtn" onClick={openMap}>
+      Open Map
+    </button>
+  </div>
+
+</div>
+
+  </div>
+);
 }

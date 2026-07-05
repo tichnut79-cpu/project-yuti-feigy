@@ -78,37 +78,64 @@ const removeMedicineHandler  = (name: string) => {
   </div>
   </div>
 )}
-      <h1>בחר תרופה</h1>
+      <h1>Find Medication</h1>
 
       <input
         value={search}
         onChange={handleSearchChange}
-        placeholder="חפש תרופה..."
+        placeholder="Search by name, ingredient or condition..."
         className={error ? "input-error" : ""}
       />
 
-      <div className="medicinesTable">
-        <h2>Medicines</h2>
+         <div className="results-grid">
 
-        <table>
-          <thead>
-            <tr>
-              <th>NAME</th>
-            </tr>
-          </thead>
+      {/* EMPTY STATE */}
+      {search.trim() === "" ? (
+        <div className="empty-state">
+          <h3>Start searching for a medication</h3>
+          <p>Try popular options:</p>
 
-          <tbody>
-            {
-            search.trim()!=="" &&
-            medicines.map((m: Medicine) => (
-              <tr key={m.name}
-                onClick={() => addMedicineHandler(m.name)}>
-                <td>{m.name}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          <div className="suggestions" 
+          >
+  {[
+    "Acamol",
+    "Nurofen",
+    "Dexemol",
+    "Optalgin"
+  ].map((med) => (
+    <span
+      key={med}
+      onClick={() => {addMedicineHandler(med);
+                      setSearch(med);}
+      }
+      className="suggestion-pill"
+    >
+      {med}
+    </span>
+  ))}
+</div>
+        </div>
+
+      ) : (
+        medicines.map((m: Medicine) => (
+          <div
+            key={m.name}
+            className="medicine-card"
+            onClick={() => addMedicineHandler(m.name)}
+          >
+            <div>
+              <div className="medicine-name">{m.name}</div>
+              <div className="medicine-meta">
+                Medication • Click to add
+              </div>
+            </div>
+
+            <button className="add-btn">+ Add</button>
+          </div>
+        ))
+      )}
+
+    </div>
       <button className={`login-btn ${error ? "error-shake" : ""}`}
       onClick={() =>{
         if(selectedMedicines.length === 0){
@@ -118,7 +145,6 @@ const removeMedicineHandler  = (name: string) => {
           return;
         }
         navigate("/pharmsTable", {
-  // state: { medicines: selectedMedicines }
 })}}>
             🔎Find Pharmacies
           </button>
