@@ -1,140 +1,152 @@
-const API = import.meta.env.VITE_API_URL;
-import { useSelector } from "react-redux";
-import type { RootState } from "../../App/store";
-import { useDispatch } from "react-redux";
-import { setCity, setStreet } from "../../Slices/locationSlice"; // עדכן נתיב
+
 import React, { useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "../../App/store";
+import { setCity, setStreet } from "../../Slices/locationSlice";
+
+const API = import.meta.env.VITE_API_URL;
 
 export default function LocationInput() {
   const dispatch = useDispatch();
 
-const [cityInput, setCityInput] = useState("");
-const [streetInput, setStreetInput] = useState("");
-  const [results, setResults] = useState([]);
-  const [streetResults, setStreetResults] = useState([]);
-  const abortRef = useRef<AbortController | null>(null);
-  const debounceRef = useRef<number | null>(null);
-
   const city = useSelector((state: RootState) => state.location.city);
   const street = useSelector((state: RootState) => state.location.street);
 
-  const searchCities = (value:string) => {
-  setCityInput(value);
-  dispatch(setCity(value));
+  const [cityInput, setCityInput] = useState(city);
+  const [streetInput, setStreetInput] = useState(street);
 
-  if (debounceRef.current) {
-    clearTimeout(debounceRef.current);
-  }
-  if (abortRef.current) {
-    abortRef.current.abort();
-  }
+  const [cityResults, setCityResults] = useState<any[]>([]);
+  const [streetResults, setStreetResults] = useState<any[]>([]);
 
-  const controller = new AbortController();
-  abortRef.current = controller;
+  const abortRef = useRef<AbortController | null>(null);
+  const debounceRef = useRef<number | null>(null);
 
-  debounceRef.current=setTimeout(async () => {
-    if (value.trim().length<2) {
-      setResults([]);
-      return;
-    }
+  /* =========================
+     CITY SEARCH (debounced)
+     ========================= */
+  const searchCities = (value: string) => {
+    setCityInput(value);
+    dispatch(setCity(value));
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (abortRef.current) abortRef.current.abort();
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    debounceRef.current = window.setTimeout(async () => {
+      if (value.trim().length < 2) {
+        setCityResults([]);
+        return;
+      }
+
+      try {
+        const res = await fetch(
+          `${API}/api/geo/cities?q=${value}`,
+          { signal: controller.signal }
+        );
+
+        const data = await res.json();
+        setCityResults(data.value || []);
+      } catch (err: any) {
+        if (err.name !== "AbortError") {
+          console.error(err);
+        }
+      }
+    }, 350);
+  };
+
+  /* =========================
+     STREET SEARCH
+     ========================= */
+  const searchStreets = async (value: string) => {
+    setStreetInput(value);
+    dispatch(setStreet(value));
+
+    if (!value || !cityInput) return;
 
     try {
       const res = await fetch(
-        `${API}/api/geo/cities?q=${value}`,
-        { signal: controller.signal }
+        `${API}/api/geo/streets?q=${value}&city=${encodeURIComponent(cityInput)}`
       );
 
       const data = await res.json();
-      setResults(data.value);
+      setStreetResults(data.value || []);
     } catch (err) {
-      if (err.name === "AbortError") {
-        return; // ← זה התקין
-      }
       console.error(err);
     }
-  }, 400);
-};
-
-
-
-  const searchStreets = async (value: string) => {
-  setStreetInput(value);
-  dispatch(setStreet(value));
-if (!value || !cityInput) return;
-  const cleanCity = encodeURIComponent(cityInput);
-
-  const res = await fetch(
-  `${API}/api/geo/streets?q=${value}&city=${encodeURIComponent(cityInput)}`
-);
-  const data = await res.json();
-  setStreetResults(data.value);
-};
+  };
 
   return (
-  <div className="location-wrapper">
+    <div className="location-wrapper">
 
-    {/* עיר */}
-    <div className="autocomplete-wrapper">
-      <h3>City</h3>
+      {/* ================= CITY ================= */}
+      <div className="autocomplete-field">
+        <label>City</label>
 
-      <input
-        value={cityInput}
-        onChange={(e) => searchCities(e.target.value)}
-        placeholder="Enter city"
-      />
-       {city.trim() === "" && (
-        <div className="field-warning">יש למלא שדה זה</div>
-          )}
-      {results.length > 0 && (
-        <div className="dropdown">
-          {results.map((item, i) => (
-            <div
-              key={i}
-              onClick={() => {
-                const selectedCity = item.display?.split(",")[0] ?? "";
-                setCityInput(selectedCity);
-                 dispatch(setCity(selectedCity));
-
-                setResults([]);
-}}
-            >
-              {item.display}
-            </div>
-          ))}
+        <div className="input-shell">
+          <input
+            value={cityInput}
+            onChange={(e) => searchCities(e.target.value)}
+            placeholder="Enter city"
+            autoComplete="off"
+          />
         </div>
-      )}
-    </div>
 
-    {/* רחוב */}
-    <div className="autocomplete-wrapper">
-      <h3>Street</h3>
+        {cityResults.length > 0 && (
+          <div className="dropdown-modern">
+            {cityResults.map((item, i) => {
+              const label = item.display?.split(",")[0] ?? item.display;
 
-      <input
-        value={streetInput}
-        onChange={(e) => searchStreets(e.target.value)}
-        placeholder="Enter street"
-      />
-      {street.trim() === "" && (
-      <div className="field-warning">יש למלא שדה זה</div>
+              return (
+                <div
+                  key={i}
+                  className="dropdown-item"
+                  onClick={() => {
+                    setCityInput(label);
+                    dispatch(setCity(label));
+                    setCityResults([]);
+                  }}
+                >
+                  {label}
+                </div>
+              );
+            })}
+          </div>
         )}
-      {streetResults.length > 0 && (
-        <div className="dropdown">
-          {streetResults.map((item, i) => (
-            <div
-              key={i}
-              onClick={() => {
-                setStreetInput(item.name);
-                dispatch(setStreet(item.name));
-                setStreetResults([]);
-              }}
-            >
-              {item.name}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+      </div>
 
-  </div>
-);
+      {/* ================= STREET ================= */}
+      <div className="autocomplete-field">
+        <label>Street</label>
+
+        <div className="input-shell">
+          <input
+            value={streetInput}
+            onChange={(e) => searchStreets(e.target.value)}
+            placeholder="Enter street"
+            autoComplete="off"
+          />
+        </div>
+
+        {streetResults.length > 0 && (
+          <div className="dropdown-modern">
+            {streetResults.map((item, i) => (
+              <div
+                key={i}
+                className="dropdown-item"
+                onClick={() => {
+                  setStreetInput(item.name);
+                  dispatch(setStreet(item.name));
+                  setStreetResults([]);
+                }}
+              >
+                {item.name}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
