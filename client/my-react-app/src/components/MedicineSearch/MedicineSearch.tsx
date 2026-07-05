@@ -60,7 +60,7 @@ const removeMedicineHandler  = (name: string) => {
     <div className="selected-title">
       נבחרו {selectedMedicines.length} תרופות
     </div>
-      <div className="selected-list">
+      <div className="med-list">
     {selectedMedicines.map((m) => (
       <div
         key={m}
